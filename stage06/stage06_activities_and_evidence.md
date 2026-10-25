@@ -2,76 +2,82 @@
 
 Complete this one group record. Link actual issues, diffs, tests and reviews; avoid copying entire histories. Blank fields are intentional. Duplicate rows as needed. Use synthetic data only. Every member records their own meaningful contribution. Do not invent results, reviews or Copilot use.
 
-- Group/tutorial: [response]
-- Members, GitHub usernames and cohorts: [response]
-- Repository URL: [response]
-- Starting SHA: [response]
+- Group/tutorial: [Group 5, Thursday 2:30]
+- Members, GitHub usernames and cohorts: []
+- Repository URL: [https://github.com/newineffect14/st1-assignment-3/tree/main]
+- Starting SHA: [e91c2447ce93402ff7fc23daf1b6bb537b985f54]
 
 ## A Requirement to issue activities
 
 ### FR-02 Patient Search
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+- Title: Implement patient search by ID
+- Context: SmartCare needs a way to find existing patients using their patient ID intsead of manually searching through records 
+- Requirement: FR-02 Patient Search
+- Acceptance criteria: - The system returns the actual stored patient when a valid ID is entered. Invalid or blank IDs raise ValueError, while unknown IDs raise LookupError. IDs are case-sensitive and surrounding spaces are removed.
+- Scope: Implement the find_patient() method in PatientService and create tests for valid, invalid and unknown patient IDS.
+- Definition of Done: The method works correctly, tests pass, and the code has been reviewed and approved by another team member.
+- Owner: Joshua-Sisourath 
+- Actual issue link: https://github.com/newineffect14/st1-assignment-3/issues/1
 
 ### FR-06 Appointment Cancellation with FR-07 retained history
 
-- Title: [response]
-- Context: [response]
-- Requirement: [response]
-- Acceptance criteria: [response]
-- Scope: [response]
-- Definition of Done: [response]
-- Owner: [response]
-- Actual issue link: [response]
+- Title: Implement appointment cancellation with retained history 
+- Context: SmartCare needs a way to cancel appointments without deleting their records, so the clinic can still access appointment history.
+- Requirement: FR-06 Appointment Cancellation and FR-07 Retained History
+- Acceptance criteria: The system allows scheduled appointments to be cancelled and changes their status to CANCELLED. The same appointment remains stored and can still be retrieved. Cancelling an aldready cancelled or completed appointmnet raises ValueError. Invalid IDs raise ValueError, while unknow IDs raise LookupError.
+- Scope: Implement the cancel_appointmnet() method in AppointmentService and create tests for successful cancellation, invalid IDs, repeated cancellation and retained history.
+- Definition of Done: The cancellation method works correctly, all relevant tests pass, and another team member has reviewed and approved the code.
+- Owner: Joshua-Sisourath
+- Actual issue link: https://github.com/newineffect14st1-assignment-3/issues/2
 
 ## B Commit quality
 
 | Original example | Strong or Weak | Reason |
 |---|---|---|
-| changes | [select] | [response] |
-| final version | [select] | [response] |
-| Add patient search by ID | [select] | [response] |
-| fix stuff | [select] | [response] |
-| Prevent cancellation of completed appointments | [select] | [response] |
+| changes | [Weak] | [Doesn't explain what was changed in the code.] |
+| final version | [Weak] | [Doesn't explained what was completed or updated] |
+| Add patient search by ID | [Strong] | [Clearly explains the feature that was added] |
+| fix stuff | [Weak] | [Too vague and doesn't identify what was fixed.] |
+| Prevent cancellation of completed appointments | [Strong] | [Clearly explains the specific behaviour that was changed.] |
 
 ## C Over scoped PR review
 
 A cancellation PR also renames unrelated patient fields, restructures unrelated code and adds a new dependency.
 
-- Scope concerns: [response]
-- Responsibility and architecture concerns: [response]
-- Testing and review concerns: [response]
-- Changes to remove or separate, with reasons: [response]
+- Scope concerns: The PR includes unrelated changes that are not needed for appointment cancellation. This makes the changes harder to review.
+- Responsibility and architecture concerns: Appointment cancellation should follow the existing domain rules. Changing unrelated patient fields or adding dependencies could affect other parts of SmartCare.
+- Testing and review concerns: Even if the tests pass, the unrelated changes could introduce problems. The reviewer should check the actual code changes and make sure cancellation works correctly.
+- Changes to remove or separate, with reasons: We would remove the unrelated patient field changes, code restructuring and new dependency from this PR. These should be separate changes if they are actually needed, so the cancellation feature is easier to test and review.
 
 ## D Challenge a weak Copilot review
 
 GitHub Copilot says: "Looks good; tests pass."
 
-- Missing evidence: [response]
-- Follow-up review question 1: [response]
-- Follow-up review question 2: [response]
-- Follow-up review question 3: [response]
-- Follow-up review question 4: [response]
-- Follow-up review question 5: [response]
-- Additional questions if useful: [response]
+- Missing evidence: Copilot has not shown which tests were run or whether the code meets the requirements. The reviewer still needs to check the code changes and test results.
+
+- Follow-up review question 1: Does the code meet the acceptance criteria of the linked requirement?
+
+- Follow-up review question 2: Were all the tests actually run, and what were the results?
+
+- Follow-up review question 3: Does the cancellation method prevent already cancelled or completed appointments from being cancelled again?
+
+- Follow-up review question 4: Does the cancelled appointment remain stored so its history can still be accessed?
+
+- Follow-up review question 5: Are there any unrelated code changes or unnecessary dependencies in the PR?
+
+- Additional questions if useful: Does the code follow the existing SmartCare responsibilities and handle invalid IDs correctly?
 
 ## E Team workflow agreement
 
 | Practice | Team agreement |
 |---|---|
-| Branch naming | [response] |
-| Commit message convention | [response] |
-| PR size | [response] |
-| Another-member review requirement | [response] |
-| Merge rule | [response] |
-| Significant Copilot disclosure rule | [response] |
+| Branch naming | [Use feature branches such as feature/patient-search or feature/appointment-cancellation.] |
+| Commit message convention | [Use short and clear messages explaining what was changed, such as Add patient search by ID.] |
+| PR size | [Keep pull requests small and focused on one feature or requirement.] |
+| Another-member review requirement | [At least one different team member must review the code before it can be merged.] |
+| Merge rule | [Only merge when tests pass, requirements are met, feedback is resolved and another member approves.] |
+| Significant Copilot disclosure rule | [Record significant Copilot assistance, explain what was suggested and how the code was checked.] |
 
 ## F Issue and backlog index
 
@@ -79,8 +85,9 @@ Create at least two focused issues. Add a linked practitioner-lookup issue or an
 
 | Issue link | Requirement | Owner | Acceptance criteria or precise link | Status |
 |---|---|---|---|---|
-| [issue 1] | [response] | [response] | [response] | [response] |
-| [issue 2] | [response] | [response] | [response] | [response] |
+| https://github.com/newineffect14/st1-assignment-3/issues/1 | FR-02 Patient Search | Joshua-Sisourath | Find stored patients by ID. Invalid IDs raise ValueError and unknown IDs raise LookupError. | Open |
+| https://github.com/newineffect14/st1-assignment-3/issues/2 | FR-06 Cancellation / FR-07 Retained History | Joshua-Sisourath | Cancel scheduled appointments, retain the record and reject invalid cancellations. | Open |
+| https://github.com/newineffect14/st1-assignment-3/issues/3 | FR-03 Supporting Practitioner Lookup | Joshua-Sisourath | Find stored practitioners by ID. Invalid IDs raise ValueError and unknown IDs raise LookupError. | Open |
 
 ## G Pull request evidence
 
