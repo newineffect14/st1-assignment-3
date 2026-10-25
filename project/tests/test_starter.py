@@ -149,3 +149,41 @@ def test_domain_cancellation_and_guard() -> None:
     with pytest.raises(ValueError):
         appointment.cancel()
     assert appointment.status is AppointmentStatus.CANCELLED
+
+def test_cancel_appointment():
+    store, patient, practitioner, service = foundation()
+
+    appointment = service.book_appointment(
+        "A1",
+        patient.patient_id,
+        practitioner.practitioner_id,
+        datetime(2026, 11, 10, 10, 0)
+    )
+
+    cancelled = service.cancel_appointment("A1")
+
+    assert cancelled.status == AppointmentStatus.CANCELLED
+    assert service.find_appointment("A1") is cancelled
+
+def test_cancel_appointment_twice():
+    _, patient, practitioner, service = foundation()
+
+    service.book_appointment(
+        "A1",
+        patient.patient_id,
+        practitioner.practitioner_id,
+        datetime(2026, 11, 10, 10, 0)
+    )
+
+    service.cancel_appointment("A1")
+
+    with pytest.raises(ValueError):
+        service.cancel_appointment("A1")
+
+    assert service.find_appointment("A1").status == AppointmentStatus.CANCELLED
+
+def test_cancel_unknown_appointment():
+    _, _, _, service = foundation()
+
+    with pytest.raises(LookupError):
+        service.cancel_appointment("A999")
