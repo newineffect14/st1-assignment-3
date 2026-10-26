@@ -68,14 +68,14 @@ class PractitionerService:
         self.data_store.add_practitioner(practitioner)
         return practitioner
 
-def find_practitioner(self, practitioner_id: str) -> Practitioner:
-    """Find an existing practitioner using their ID."""
-    practitioner = self.data_store.find_practitioner(practitioner_id)
+    def find_practitioner(self, practitioner_id: str) -> Practitioner:
+        """Find an existing practitioner using their ID."""
+        practitioner = self.data_store.find_practitioner(practitioner_id)
 
-    if practitioner is None:
-        raise LookupError("Practitioner not found")
+        if practitioner is None:
+            raise LookupError("Practitioner not found")
 
-    return practitioner
+        return practitioner
 
 
 class AppointmentService:
