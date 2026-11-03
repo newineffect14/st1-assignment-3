@@ -169,11 +169,11 @@ Actual prompt / output reference and member: [complete]
 Final human conclusion and comparison with initial hypothesis: [complete]
 
 ### F8-02 Copilot review
-Actual prompt / output reference and member: [complete]
-1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: [complete]
-Final human conclusion and comparison with initial hypothesis: [complete]
+Actual prompt / output reference and member: Lemuel Legaspi, 3 Nov 2026, after the E entry was committed (fb377e0). Handout prompt structure with observed/expected/steps/failing test/hypothesis and the `find_appointment` method. Prompt and full reply saved in `stage08/copilot_f8_02.md`.
+1. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: `SmartCareDataStore.find_appointment` filters out appointments whose status is "cancelled" / compare the object before and after cancel, and lookup while SCHEDULED versus CANCELLED / runtime check: lookup returned the object while SCHEDULED (`is a: True`) and `None` once CANCELLED, while the same object (same `id()`, ID `'A1'`) was still in `list_appointments()`; the method contains `appointment.status.value != "cancelled"` / **correct** / **accept**: it is the only difference between the passing and failing lookups and it explains all 4 F8-02 failures.
+2. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: cancellation replaces or changes the object, its ID or status representation, or moves it to another collection / compare `id()`, `appointment_id` and `status` before and after cancel / same `id()` 2720909534144 before and after, ID `'A1'` unchanged, status the expected `AppointmentStatus.CANCELLED`, `list_appointments()[0] is a` True / **wrong** / **reject**: the object, ID and collection are unchanged; cancel behaves as FR-06 requires.
+3. Ranked suggestion / evidence check / observed evidence / correct, partly correct or wrong / accept, modify or reject with reason: `AppointmentService.find_appointment` separately treats cancelled appointments as not found / read the service method / the traceback at `services.py:136` shows it only calls `self.data_store.find_appointment(...)` and raises LookupError when the result is `None`; there is no status check / **wrong** / **reject**: the service only passes on the store's `None`, so fixing the store is enough.
+Final human conclusion and comparison with initial hypothesis: the root cause is the status condition in `SmartCareDataStore.find_appointment`, which excludes cancelled appointments that FR-07 requires to be retained and findable. This matches my initial hypothesis in E; Copilot's ranking agreed, and the runtime check ruled out causes 2 and 3 rather than just assuming them.
 
 ## G. Failing to passing regression evidence
 
