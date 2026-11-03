@@ -126,7 +126,7 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 - Symptom / observed behaviour: after cancelling `A1`, the appointment is still in `list_appointments()` with status CANCELLED, but `store.find_appointment('A1')` returns `None` and `AppointmentService.find_appointment('A1')` raises `LookupError: Appointment not found`. A second cancel raises LookupError instead of the guarded ValueError (`test_starter.py::test_cancel_appointment_twice`).
 - Expected behaviour and requirement: booking the same practitioner at the same datetime as an existing SCHEDULED appointment raises ValueError, and the store is unchanged (FR-05 / AC-04.1). A different practitioner at that time is booked successfully (AC-04.2). No patient-conflict or duration-overlap rule.
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `P2`, `D1`, `D2`; book `A1` = `P1`/`D1` at 2026-10-01 09:00; book `A2` = `P2`/`D1` at the same time (expect ValueError, store unchanged); book `A3` = `P2`/`D2` at the same time (expect SCHEDULED).
-- Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` (TEST-R01) / [complete: exact failure line]
+- Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` (TEST-R01) / `tests/test_regressions.py:46: Failed: DID NOT RAISE <class 'ValueError'>`. Tested at `92a0a5a`.
 - Human hypothesis and intended checks: see E, F8-01.
 - Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
 - Smallest justified fix / diff / why other behaviour is preserved: [complete]
@@ -134,7 +134,7 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 
 ## D. F8-02 diagnosis and repair
 
-- Symptom / observed behaviour: [complete from your run]
+- Symptom / observed behaviour: - Symptom / observed behaviour: after booking `A1` for `D1` at 2026-10-01 09:00, a second booking for the same practitioner `D1` at the same time is accepted instead of rejected, while booking a different practitioner `D2` at that time is wrongly rejected ("Practitioner already has a SCHEDULED appointment at this time"). Direct check: `has_practitioner_conflict('D1', t)` → False, `has_practitioner_conflict('D2', t)` → True. Also fails `test_starter.py::test_conflict_rule_and_different_practitioner` (line 127) and `::test_double_booking_rejected` (line 201) with "DID NOT RAISE ValueError".
 - Expected behaviour and requirement: after cancelling, the same object is retained with CANCELLED status, stays in `list_appointments()`, and is returned by both store and service lookup (FR-06, FR-07, BR-07, AC-05.2, FR-08). A repeated cancel is still rejected with ValueError and changes nothing.
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `D1`; book `A1` at 2026-10-01 09:00; cancel `A1`; check status, list membership, `store.find_appointment('A1')` (None vs object) and `service.find_appointment('A1')` (LookupError vs object); cancel `A1` again (expect ValueError).
 - Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_cancelled_appointment_is_still_found` (TEST-R02) / `tests\test_regressions.py:71: AssertionError: assert None is <smartcare.domain.Appointment object>`, where `None = find_appointment('A1')`; lines 69–70 passed. Tested at `92a0a5a`.
@@ -148,9 +148,8 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 Complete both entries BEFORE Copilot. C/D supply observed/expected/reproduction/test; retain those initial facts and link them here.
 
 ### F8-01 human entry
-Likely cause and why plausible: [complete]
-Evidence intended to inspect / competing explanation / discriminating check: [complete]
-Member and saved sequence/time or commit showing this preceded consultation: [complete]
+ Likely cause and why plausible: The check reports no conflict for the same practitioner (D1 → False) but a conflict for a different practitioner (D2 → True), so the result is the exact opposite of FR-05 / AC-04.1 and AC-04.2. Because both cases are wrong in a mirrored way, rather than one case simply being missed, I think the practitioner comparison in SmartCareDataStore.has_practitioner_conflict is inverted: it matches appointments for practitioners other than the one being booked, instead of the same practitioner. Evidence intended to inspect / competing explanation / discriminating check: I will read has_practitioner_conflict in smartcare/data_store.py and look at how it compares appointment.practitioner.practitioner_id with practitioner_id. Competing explanation 1: the date/time comparison is wrong (for example comparing different precision). Competing explanation 2: the SCHEDULED status check is wrong. Competing explanation 3: AppointmentService.book_appointment passes the wrong practitioner ID. Discriminating checks: the time and status are identical for the D1 and D2 calls, so those conditions can't explain why D1 and D2 get opposite results; only the practitioner condition differs. Calling has_practitioner_conflict directly (as I did) bypasses the service, so a service bug wouldn't change these results.  
+
 
 ### F8-02 human entry
 Likely cause and why plausible: The cancelled appointment is still in list_appointments() with status CANCELLED (R lines 69–70 pass), so I don't think it was deleted or replaced. Lookup works before cancelling and only fails afterwards, and the only thing cancel changes is the status. So my guess is that SmartCareDataStore.find_appointment checks the appointment's status and skips (returns None for) appointments that are cancelled, instead of matching on the ID alone. The service then turns that None into LookupError.
