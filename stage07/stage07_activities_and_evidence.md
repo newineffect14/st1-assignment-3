@@ -48,7 +48,7 @@ For each input/state, expected result and supporting contract:
 
 - Blank identifiers: Enter an empty patient or appointment ID. Expected result: ValueError because IDs must be valid.
 - Whitespace-only names: Register a patient with a name containing only spaces. Expected result: ValueError because the name is invalid.
-- Same-time practitioner bookings: Book two appointments for the same practitioner at the same time. Expected result: ValueError because a practitioner cannot have overlapping appointments.
+- Same-time practitioner bookings: Book two appointments for the same practitioner at the exact same time. Expected result: ValueError because a practitioner cannot have two appointments at the same time.
 - Cancelled appointments: Try cancelling an appointment that is already cancelled. Expected result: ValueError because repeated cancellation is not allowed.
 - Invalid status transitions: Try cancelling a completed appointment. Expected result: ValueError because completed appointments cannot be cancelled.
 
@@ -76,13 +76,16 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 
 | Requirement | Acceptance criterion | Test ID | Test type | Test name / location | Expected behaviour | Result / observed status | Supplied or student-authored |
 |---|---|---|---|---|---|---|---|
-| FR-01 Register patient | Patient registration rejects invalid required fields | TEST-01 | Negative | test_required_fields() - tests/test_starter.py | Invalid patient details raise ValueError | Passed in previous 11-test run | Supplied |
-| FR-06 Cancel appointment | Cancelling a scheduled appointment changes its status to CANCELLED | TEST-02 | Positive | test_cancel_appointment() - tests/test_starter.py | Appointment status becomes CANCELLED | Passed in previous 11-test run | Student-authored |
-| FR-06 Cancel appointment | Repeated cancellation is rejected | TEST-03 | Negative | test_cancel_appointment_twice() - tests/test_starter.py | Second cancellation raises ValueError | Passed in previous 11-test run | Student-authored |
-| FR-06 Cancel appointment | Unknown appointment IDs are rejected | TEST-04 | Negative | test_cancel_unknown_appointment() - tests/test_starter.py | Unknown ID raises LookupError | Passed in previous 11-test run | Student-authored |
-| FR-07 Retain cancelled history | Cancelled appointments remain stored | TEST-05 | Positive | test_cancel_appointment() - tests/test_starter.py | Stored appointment is the same cancelled object | Passed in previous 11-test run | Student-authored |
-| FR-07 Retain cancelled history | Cancelling does not remove the appointment | TEST-06 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment remains in storage after cancellation | Passed in previous 11-test run | Supplied |
-| FR-01 Register patient | Patient and practitioner required fields are validated | TEST-07 | Negative | test_required_fields() - tests/test_starter.py | Invalid required fields raise ValueError | Passed in previous 11-test run | Supplied |
+| FR-01 Register patient | Whitespace-only patient ID is rejected during Patient construction | TEST-01 | Negative | test_required_fields() - tests/test_starter.py | ValueError is raised for a whitespace-only patient ID | Passed in 12-test run | Supplied |
+| FR-06 Cancel appointment | Cancelling a scheduled appointment changes its status to CANCELLED | TEST-02 | Positive | test_cancel_appointment() - tests/test_starter.py | Appointment status becomes CANCELLED | Passed in 12-test run | Student-authored |
+| FR-06 Cancel appointment | Repeated cancellation is rejected | TEST-03 | Negative | test_cancel_appointment_twice() - tests/test_starter.py | Second cancellation raises ValueError | Passed in 12-test run | Student-authored |
+| FR-06 Cancel appointment | Unknown appointment IDs are rejected | TEST-04 | Negative | test_cancel_unknown_appointment() - tests/test_starter.py | Unknown ID raises LookupError | Passed in 12-test run | Student-authored |
+| FR-07 Retain cancelled history | Cancelled appointments remain stored | TEST-05 | Positive | test_cancel_appointment() - tests/test_starter.py | Stored appointment is the same cancelled object | Passed in 12-test run | Student-authored |
+| FR-07 Retain cancelled history | Cancelling does not remove the appointment | TEST-06 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment remains in storage after cancellation | Passed in 12-test run | Supplied |
+| FR-01 Register patient | Patient and practitioner required fields are validated | TEST-07 | Negative | test_required_fields() - tests/test_starter.py | Invalid required fields raise ValueError | Passed in 12-test run | Supplied |
+| FR-01 Register patient / Appointment booking | Patient registration and appointment booking work | TEST-08 | Positive | test_registration_and_booking() - tests/test_starter.py | Patient registration and appointment booking succeed | Passed in 12-test run | Supplied |
+| FR-06 Cancel appointment | Cancelling an appointment changes its status to CANCELLED and retains the record | TEST-09 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment status becomes CANCELLED and remains stored | Passed in 12-test run | Supplied |
+| FR-06 Cancel appointment | Repeated cancellation is rejected | TEST-10 | Negative | test_domain_cancellation_and_guard() - tests/test_starter.py | ValueError is raised when cancelling an already cancelled appointment | Passed in 12-test run | Supplied |
 | FR-05 Prevent double booking | Same practitioner cannot be booked twice at the same time | TEST-11 | Negative | test_double_booking_rejected() - tests/test_starter.py | ValueError is raised for a conflicting booking | Passed in 12-test run | Student-authored |
 
 ## C Test Design
@@ -115,10 +118,10 @@ Cover Patient/Practitioner construction and validation; Appointment construction
 
 | Test ID | Behaviour | Test file/function | Result |
 |---|---|---|---|
-| TEST-07 | Patient and practitioner required fields are validated | tests/test_starter.py - test_required_fields() | Passed in previous 11-test run |
-| TEST-08 | Patient registration and appointment booking work | tests/test_starter.py - test_registration_and_booking() | Passed in previous 11-test run |
-| TEST-09 | Appointment cancellation changes status to CANCELLED and retains the appointment in storage | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in previous 11-test run |
-| TEST-10 | Cancelling an already cancelled appointment raises ValueError | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in previous 11-test run |
+| TEST-07 | Patient and practitioner required fields are validated | tests/test_starter.py - test_required_fields() | Passed in 12-test run |
+| TEST-08 | Patient registration and appointment booking work | tests/test_starter.py - test_registration_and_booking() | Passed in 12-test run |
+| TEST-09 | Appointment cancellation changes status to CANCELLED and retains the appointment in storage | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in 12-test run |
+| TEST-10 | Cancelling an already cancelled appointment raises ValueError | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in 12-test run |
 
 ## F Service Test Evidence
 
@@ -126,10 +129,10 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 
 | Test ID | Behaviour | Requirement / criterion | Test file/function | Result |
 |---|---|---|---|---|
-| TEST-02 | Cancel a scheduled appointment and update its status | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment() | Passed in previous 11-test run |
-| TEST-03 | Reject repeated cancellation | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment_twice() | Passed in previous 11-test run |
-| TEST-04 | Reject an unknown appointment ID | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_unknown_appointment() | Passed in previous 11-test run |
-| TEST-05 | Keep cancelled appointments stored and retrievable | FR-07 Retained History | tests/test_starter.py - test_cancel_appointment() | Passed in previous 11-test run |
+| TEST-02 | Cancel a scheduled appointment and update its status | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment() | Passed in 12-test run |
+| TEST-03 | Reject repeated cancellation | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment_twice() | Passed in 12-test run |
+| TEST-04 | Reject an unknown appointment ID | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_unknown_appointment() | Passed in 12-test run |
+| TEST-05 | Keep cancelled appointments stored and retrievable | FR-07 Retained History | tests/test_starter.py - test_cancel_appointment() | Passed in 12-test run |
 | TEST-11 | Reject double booking for the same practitioner and time | FR-05 Prevent Double Booking | tests/test_starter.py - test_double_booking_rejected() | Passed in 12-test run |
 
 ## G Negative and Boundary Cases
@@ -138,7 +141,7 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 
 | Behaviour | Boundary/invalid input | Expected result | Test ID |
 |---|---|---|---|
-| Patient registration | Empty patient ID | ValueError is raised and the patient is not registered | TEST-01 |
+| Patient registration | Whitespace-only patient ID during Patient construction | ValueError is raised and the Patient object is not created | TEST-01 |
 | Appointment cancellation | Cancel an already cancelled appointment | ValueError is raised and the appointment remains CANCELLED | TEST-03 |
 | Appointment cancellation | Unknown appointment ID (A999) | LookupError is raised and no appointment is changed | TEST-04 |
 | Cancelled appointment history | Retrieve an appointment after cancellation | The cancelled appointment remains stored and can be retrieved | TEST-05 |
@@ -164,8 +167,7 @@ For each significant candidate, copy this entry as needed:
 - Decision: Reject
 - Reason: The generated test needs changes before it can run correctly. Existing tests already verify cancellation and repeated cancellation.
 - Final test reference if accepted/modified: Not retained. Existing tests are test_cancel_appointment() and test_cancel_appointment_twice() in project/tests/test_starter.py.
-- Actual verification result: Copilot's generated test was not run. The existing test suite previously passed all 11 tests.
-
+- Actual verification result: Copilot's generated test was not run. The existing test suite passed all 12 tests.
 
 Before accepting: traces to a requirement/criterion; can fail for the right reason; assertion checks required behaviour; no invented business rule; no unnecessary private implementation dependence. Reject/modify weak assertions, invented requirements, excessive mocking, duplicates, wrong exceptions, obsolete architecture and unnecessary dependencies.
 
@@ -189,12 +191,15 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
-| python3 -m pytest -q | project/ | cbdfa0716505a0cc8d46e1156757d024e825e8 | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
+| python3 -m pytest -q | project/ | cbdfa07 | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
 
-Individual test runs and changed-order independence evidence: [commands, results, links]
-Optional tutor-led demonstration notes: [optional; leave blank if not used]
+Individual test runs and changed-order independence evidence: Not separately performed. Full pytest suite completed with 12 passed and 0 failed.
+
+Optional tutor-led demonstration notes: Not performed.
+
 A meaningful test should detect a relevant incorrect result. Students do not have to perform the demonstration or submit failure/restoration evidence for assessment. The tutor restores the example and reruns its tests. This is not a Stage 8 fault activity.
-Requirement → test → failure/observation → diagnosis → change → verification: [concise links where applicable]
+
+Requirement → test → failure/observation → diagnosis → change → verification: FR-05 → TEST-11 → Conflicting booking rejected → No failure observed → No product change required → Verified in the 12-test pytest run.
 
 ## K What the Suite Still Does Not Prove
 
@@ -256,9 +261,9 @@ Tests must provide meaningful evidence that the software meets its requirements.
 
 ## O Stage Completion
 
-Tested Stage 7 main SHA: [complete]
-Full-suite result: [complete]
-Unresolved defects and effect on baseline: [complete or none]
-Clean working tree and integration evidence: [complete]
-Stage 8 handover status: [complete; no Stage 8 work assigned]
-All tutorial/formative responses and traceability/Copilot decisions complete: [confirm]
+- Tested Stage 7 main SHA: cbdfa07 (feature/stage7-testing branch; main merge pending confirmation).
+- Full-suite result: 12 tests passed.
+- Unresolved defects and effect on baseline: No failing tests reported in the 12-test run. Reviewer feedback corrections completed.
+- Clean working tree and integration evidence: Pending verification using git status and confirmation of PR #5 merge.
+- Stage 8 handover status: Stage 7 testing evidence prepared. No Stage 8 work assigned.
+- All tutorial/formative responses and traceability/Copilot decisions complete: Pending final confirmation.
