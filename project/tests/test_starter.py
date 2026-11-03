@@ -187,3 +187,21 @@ def test_cancel_unknown_appointment():
 
     with pytest.raises(LookupError):
         service.cancel_appointment("A999")
+
+def test_double_booking_rejected():
+    _, patient, practitioner, service = foundation()
+
+    service.book_appointment(
+        "A1",
+        patient.patient_id,
+        practitioner.practitioner_id,
+        datetime(2026, 11, 10, 10, 0)
+    )
+
+    with pytest.raises(ValueError):
+        service.book_appointment(
+            "A2",
+            patient.patient_id,
+            practitioner.practitioner_id,
+            datetime(2026, 11, 10, 10, 0)
+        )

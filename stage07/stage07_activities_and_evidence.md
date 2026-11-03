@@ -82,6 +82,8 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 | FR-06 Cancel appointment | Unknown appointment IDs are rejected | TEST-04 | Negative | test_cancel_unknown_appointment() - tests/test_starter.py | Unknown ID raises LookupError | Passed in previous 11-test run | Student-authored |
 | FR-07 Retain cancelled history | Cancelled appointments remain stored | TEST-05 | Positive | test_cancel_appointment() - tests/test_starter.py | Stored appointment is the same cancelled object | Passed in previous 11-test run | Student-authored |
 | FR-07 Retain cancelled history | Cancelling does not remove the appointment | TEST-06 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment remains in storage after cancellation | Passed in previous 11-test run | Supplied |
+| FR-01 Register patient | Patient and practitioner required fields are validated | TEST-07 | Negative | test_required_fields() - tests/test_starter.py | Invalid required fields raise ValueError | Passed in previous 11-test run | Supplied |
+| FR-05 Prevent double booking | Same practitioner cannot be booked twice at the same time | TEST-08 | Negative | test_double_booking_rejected() - tests/test_starter.py | ValueError is raised for a conflicting booking | Passed in 12-test run | Student-authored |
 
 ## C Test Design
 
@@ -93,6 +95,7 @@ Use descriptive test names such as test_cancel_changes_status() or test_blank_pa
 | TEST-03 | FR-06 | Repeated cancellation is rejected | Negative | Attempt to cancel an already cancelled appointment | ValueError is raised and status remains CANCELLED | Checks repeated cancellation handling |
 | TEST-04 | FR-06 | Unknown appointment IDs are rejected | Negative | Cancel an appointment using an unknown ID | LookupError is raised | Checks handling of unknown appointment IDs |
 | TEST-05 | FR-07 | Cancelled appointments remain stored | Positive | Retrieve an appointment after cancellation | The same cancelled appointment object is returned | Confirms appointment history is retained |
+| TEST-08 | FR-05 | Same practitioner cannot be double-booked | Negative | Attempt to book two appointments for the same practitioner at the same time | ValueError is raised | Confirms conflicting bookings are rejected |
 
 ## D Arrange Act Assert Record
 
@@ -104,6 +107,7 @@ Arrange test data; act on one meaningful behaviour; assert the required observab
 | TEST-03 | Create and book an appointment, then cancel it once. | Attempt to cancel the same appointment again. | `with pytest.raises(ValueError)` | Confirms repeated cancellation is rejected. |
 | TEST-04 | Create a service with no appointment matching ID A999. | Call `service.cancel_appointment("A999")`. | `with pytest.raises(LookupError)` | Confirms unknown appointment IDs are rejected. |
 | TEST-05 | Create and book an appointment in the shared data store. | Cancel the appointment and retrieve it again. | `assert service.find_appointment("A1") is cancelled` | Confirms the same appointment remains stored after cancellation. |
+| TEST-08 | Create a patient, practitioner and an existing appointment at a chosen time. | Attempt to book another appointment for the same practitioner at the same time. | `with pytest.raises(ValueError)` | Confirms the system rejects double bookings for the same practitioner and time. |
 
 ## E Domain Test Evidence
 
@@ -126,6 +130,7 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 | TEST-03 | Reject repeated cancellation | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment_twice() | Passed in previous 11-test run |
 | TEST-04 | Reject an unknown appointment ID | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_unknown_appointment() | Passed in previous 11-test run |
 | TEST-05 | Keep cancelled appointments stored and retrievable | FR-07 Retained History | tests/test_starter.py - test_cancel_appointment() | Passed in previous 11-test run |
+| TEST-08 | Reject double booking for the same practitioner and time | FR-05 Prevent Double Booking | tests/test_starter.py - test_double_booking_rejected() | Passed in 12-test run |
 
 ## G Negative and Boundary Cases
 
@@ -137,6 +142,7 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 | Appointment cancellation | Cancel an already cancelled appointment | ValueError is raised and the appointment remains CANCELLED | TEST-03 |
 | Appointment cancellation | Unknown appointment ID (A999) | LookupError is raised and no appointment is changed | TEST-04 |
 | Cancelled appointment history | Retrieve an appointment after cancellation | The cancelled appointment remains stored and can be retrieved | TEST-05 |
+| Appointment booking | Same practitioner booked twice at the same time | ValueError is raised and the conflicting booking is rejected | TEST-08 |
 
 ## H GitHub Copilot Test Design
 
@@ -182,7 +188,8 @@ Rejected the Copilot-generated test. See Section H and the existing tests in pro
 Run python -m pytest from project/. Retain all accumulated tests. Record the tested SHA accurately.
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
-| python3 -m pytest -q | project/ | cbbc1425268b539e4c0f1a5a203d4bdc84d76e0e | 11 | 0 | None | No defects found in this run | All 11 tests passed in 0.01s on the recorded code SHA. |
+|---|---|---|---|---|---|---|---|
+| python3 -m pytest -q | project/ | SHA pending new commit | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
 
 Individual test runs and changed-order independence evidence: [commands, results, links]
 Optional tutor-led demonstration notes: [optional; leave blank if not used]
