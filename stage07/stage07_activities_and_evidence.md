@@ -261,9 +261,9 @@ Tests must provide meaningful evidence that the software meets its requirements.
 
 ## O Stage Completion
 
-- Tested Stage 7 main SHA: cbdfa07 (feature/stage7-testing branch; main merge pending confirmation).
-- Full-suite result: 12 tests passed.
-- Unresolved defects and effect on baseline: No failing tests reported in the 12-test run. Reviewer feedback corrections completed.
-- Clean working tree and integration evidence: Pending verification using git status and confirmation of PR #5 merge.
-- Stage 8 handover status: Stage 7 testing evidence prepared. No Stage 8 work assigned.
-- All tutorial/formative responses and traceability/Copilot decisions complete: Pending final confirmation.
+- Tested Stage 7 branch SHA: 564278e.
+- Full-suite result: 12 tests passed, 0 failed.
+- Unresolved defects and effect on baseline: No defects identified by the 12-test regression run.
+- Clean working tree and integration evidence: Working tree clean. Commit 564278e pushed to feature/stage7-testing. PR #5 awaiting review and merge.
+- Stage 8 handover status: Stage 7 testing and documentation completed. No Stage 8 work assigned.
+- All tutorial/formative responses and traceability/Copilot decisions complete: Yes, completed and recorded in Sections A-N.
