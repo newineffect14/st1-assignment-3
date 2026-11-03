@@ -83,7 +83,7 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 | FR-07 Retain cancelled history | Cancelled appointments remain stored | TEST-05 | Positive | test_cancel_appointment() - tests/test_starter.py | Stored appointment is the same cancelled object | Passed in previous 11-test run | Student-authored |
 | FR-07 Retain cancelled history | Cancelling does not remove the appointment | TEST-06 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment remains in storage after cancellation | Passed in previous 11-test run | Supplied |
 | FR-01 Register patient | Patient and practitioner required fields are validated | TEST-07 | Negative | test_required_fields() - tests/test_starter.py | Invalid required fields raise ValueError | Passed in previous 11-test run | Supplied |
-| FR-05 Prevent double booking | Same practitioner cannot be booked twice at the same time | TEST-08 | Negative | test_double_booking_rejected() - tests/test_starter.py | ValueError is raised for a conflicting booking | Passed in 12-test run | Student-authored |
+| FR-05 Prevent double booking | Same practitioner cannot be booked twice at the same time | TEST-11 | Negative | test_double_booking_rejected() - tests/test_starter.py | ValueError is raised for a conflicting booking | Passed in 12-test run | Student-authored |
 
 ## C Test Design
 
@@ -95,7 +95,7 @@ Use descriptive test names such as test_cancel_changes_status() or test_blank_pa
 | TEST-03 | FR-06 | Repeated cancellation is rejected | Negative | Attempt to cancel an already cancelled appointment | ValueError is raised and status remains CANCELLED | Checks repeated cancellation handling |
 | TEST-04 | FR-06 | Unknown appointment IDs are rejected | Negative | Cancel an appointment using an unknown ID | LookupError is raised | Checks handling of unknown appointment IDs |
 | TEST-05 | FR-07 | Cancelled appointments remain stored | Positive | Retrieve an appointment after cancellation | The same cancelled appointment object is returned | Confirms appointment history is retained |
-| TEST-08 | FR-05 | Same practitioner cannot be double-booked | Negative | Attempt to book two appointments for the same practitioner at the same time | ValueError is raised | Confirms conflicting bookings are rejected |
+| TEST-11 | FR-05 | Same practitioner cannot be double-booked | Negative | Attempt to book two appointments for the same practitioner at the same time | ValueError is raised | Confirms conflicting bookings are rejected |
 
 ## D Arrange Act Assert Record
 
@@ -107,7 +107,7 @@ Arrange test data; act on one meaningful behaviour; assert the required observab
 | TEST-03 | Create and book an appointment, then cancel it once. | Attempt to cancel the same appointment again. | `with pytest.raises(ValueError)` | Confirms repeated cancellation is rejected. |
 | TEST-04 | Create a service with no appointment matching ID A999. | Call `service.cancel_appointment("A999")`. | `with pytest.raises(LookupError)` | Confirms unknown appointment IDs are rejected. |
 | TEST-05 | Create and book an appointment in the shared data store. | Cancel the appointment and retrieve it again. | `assert service.find_appointment("A1") is cancelled` | Confirms the same appointment remains stored after cancellation. |
-| TEST-08 | Create a patient, practitioner and an existing appointment at a chosen time. | Attempt to book another appointment for the same practitioner at the same time. | `with pytest.raises(ValueError)` | Confirms the system rejects double bookings for the same practitioner and time. |
+| TEST-11 | Create a patient, practitioner and an existing appointment at a chosen time. | Attempt to book another appointment for the same practitioner at the same time. | `with pytest.raises(ValueError)` | Confirms the system rejects double bookings for the same practitioner and time. |
 
 ## E Domain Test Evidence
 
@@ -130,7 +130,7 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 | TEST-03 | Reject repeated cancellation | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_appointment_twice() | Passed in previous 11-test run |
 | TEST-04 | Reject an unknown appointment ID | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_unknown_appointment() | Passed in previous 11-test run |
 | TEST-05 | Keep cancelled appointments stored and retrievable | FR-07 Retained History | tests/test_starter.py - test_cancel_appointment() | Passed in previous 11-test run |
-| TEST-08 | Reject double booking for the same practitioner and time | FR-05 Prevent Double Booking | tests/test_starter.py - test_double_booking_rejected() | Passed in 12-test run |
+| TEST-11 | Reject double booking for the same practitioner and time | FR-05 Prevent Double Booking | tests/test_starter.py - test_double_booking_rejected() | Passed in 12-test run |
 
 ## G Negative and Boundary Cases
 
@@ -142,7 +142,7 @@ Connect cases to actual contracts and verify unchanged state after rejection.
 | Appointment cancellation | Cancel an already cancelled appointment | ValueError is raised and the appointment remains CANCELLED | TEST-03 |
 | Appointment cancellation | Unknown appointment ID (A999) | LookupError is raised and no appointment is changed | TEST-04 |
 | Cancelled appointment history | Retrieve an appointment after cancellation | The cancelled appointment remains stored and can be retrieved | TEST-05 |
-| Appointment booking | Same practitioner booked twice at the same time | ValueError is raised and the conflicting booking is rejected | TEST-08 |
+| Appointment booking | Same practitioner booked twice at the same time | ValueError is raised and the conflicting booking is rejected | TEST-11 |
 
 ## H GitHub Copilot Test Design
 
@@ -189,7 +189,7 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
-| python3 -m pytest -q | project/ | SHA pending new commit | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
+| python3 -m pytest -q | project/ | cbdfa0716505a0cc8d46e1156757d024e825e8 | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
 
 Individual test runs and changed-order independence evidence: [commands, results, links]
 Optional tutor-led demonstration notes: [optional; leave blank if not used]
@@ -205,13 +205,14 @@ Coverage if used: Not used.
 Which uncovered areas matter, and why does coverage percentage alone not establish correctness? More testing is needed for edge cases, invalid inputs and interactions between services. High coverage only means code was executed, not that the correct behaviour was checked.
 
 Optional fixtures/parametrisation used and why, if any: Not used.
+
 ## L Git and Review Evidence
 
 Use links rather than copying GitHub history. Continue the Stage 6 workflow; no commit/PR count, conflict or individual test quota is imposed.
 
 | Issue/task | Branch | PR | Reviewer | Key feedback | Outcome |
 |---|---|---|---|---|---|
-| [complete] | [complete] | [complete] | [complete] | [complete] | [complete] |
+| Stage 7 testing and verification | feature/stage7-testing | https://github.com/newineffect14/st1-assignment-3/pull/5 | suplemonaki and newineffect14 | Requested fixes to test IDs, duplicate tests, test organisation and missing evidence | Changes requested; PR awaiting updates |
 
 ## M Contribution Evidence
 
@@ -219,39 +220,39 @@ Record actual work in test design, implementation, review, traceability, diagnos
 
 | Member | Actual contribution | Evidence link |
 |---|---|---|
-| [complete] | [complete] | [complete] |
+| Joshua-Sisourath | Added and tested appointment cancellation, created Stage 7 test evidence, ran pytest with 12 passing tests, and submitted PR #5 for team review. | https://github.com/newineffect14/st1-assignment-3/pull/5 |
 
 ## N Formative Questions
 
 1. What question does verification answer?
-[response]
+Verification checks whether the software was built correctly according to its requirements and design.
 
 2. What question does validation answer?
-[response]
+Validation checks whether the software meets the user's needs and solves the intended problem.
 
 3. What is a unit test?
-[response]
+A unit test checks a small part of the code, such as a function or method, to make sure it works correctly.
 
 4. What is a pytest fixture?
-[response]
+A pytest fixture provides reusable test data or setup so multiple tests can run with the same starting conditions.
 
 5. What is parametrisation in pytest?
-[response]
+Parametrisation allows the same test to run multiple times with different inputs and expected results, reducing repeated test code.
 
 6. What is regression testing?
-[response]
+Regression testing checks that existing features still work correctly after changes or new code have been added.
 
 7. What does code coverage tell us, and what does it not prove?
-[response]
+Code coverage shows how much code was executed during testing. It does not prove that the tests check the correct behaviour or that the software has no bugs.
 
 8. What makes an assertion weak?
-[response]
+An assertion is weak when it only checks that code runs or returns something, without checking the actual expected result.
 
 9. What is the appropriate role of GitHub Copilot as a test assistant?
-[response]
+GitHub Copilot should assist with suggesting test ideas and code, but developers must review, correct and verify its suggestions against the actual requirements.
 
 10. What is the Stage 7 engineering rule?
-[response]
+Tests must provide meaningful evidence that the software meets its requirements. Passing tests alone are not enough if they do not check the correct behaviour.
 
 ## O Stage Completion
 
