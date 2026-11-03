@@ -37,9 +37,9 @@ Choose the cancelled-history scenario or a same-practitioner/time booking. Befor
 Response and reason (cancelled-history scenario):
 
 - **Expected:** after `cancel_appointment('A1')`, the same object is kept with status CANCELLED. `list_appointments()` still contains it, `store.find_appointment('A1')` returns that object, and `AppointmentService.find_appointment('A1')` returns it rather than raising LookupError. Requirements: FR-06 (guarded cancellation), FR-07 and BR-07 (history retained), AC-05.2 (retained history is protected), FR-08 (lookup).
-- **Observed:** [complete from your run. Record the actual first failing assertion of R `test_cancelled_appointment_is_still_found`]
+- **Observed:** after cancelling, `appointment.status` was CANCELLED and `list_appointments()` still held the object (R lines 69–70 passed), but `data_store.find_appointment('A1')` returned `None` (R line 71: `AssertionError: assert None is <Appointment>`). Through the service, the same lookup raises `LookupError: Appointment not found` (`test_starter.py::test_cancel_appointment`, `services.py:136`).
 - **Minimal reproduction:** fresh `SmartCareDataStore`; register patient `P1` and practitioner `D1`; book `A1` for `P1`/`D1` at 2026-10-01 09:00; cancel `A1`; then check status, list membership, store lookup and service lookup in that order.
-- **Initial hypothesis:** [complete. Your own guess, written before Copilot; keep it even if it turns out wrong]
+- **Initial hypothesis:** SmartCareDataStore.find_appointment skips appointments whose status is CANCELLED, so it returns None even though the object is still stored.
 - **Evidence to inspect:** whether the object is still in `list_appointments()` (this separates "removed" from "not found"); what `store.find_appointment('A1')` returns compared with the service lookup (this separates None from LookupError); and the code of `SmartCareDataStore.find_appointment`, plus `git diff` of the prepared commit.
 
 ### A.3 Test defect or product defect
@@ -83,8 +83,8 @@ Using one actual failure, identify its exception/assertion, expected and observe
 Response and reason (based on R `test_cancelled_appointment_is_still_found`; confirm the values against your own run in section G):
 
 - **Assertion:** `AssertionError` at R line 71, `assert data_store.find_appointment('A1') is appointment`.
-- **Expected / observed:** expected the booked `Appointment` object; observed [complete: copy the value from your run].
-- **Earlier lines in the same test:** [complete: state whether lines 69 (status CANCELLED) and 70 (list still holds the object) passed]
+- **Expected / observed:** expected the booked `Appointment` object; observed `None`.
+- **Earlier lines in the same test:** line 69 (status is CANCELLED) and line 70 (`list_appointments() == [appointment]`) both passed, so the object is still stored; only the store's lookup fails to return it.
 - **Call path:** test → `SmartCareDataStore.find_appointment('A1')` in `smartcare/data_store.py`. The service's `find_appointment` and `cancel_appointment` both call the same store method.
 - **Requirement:** FR-07 / BR-07 / AC-05.2 (history retained), FR-08 (lookup).
 
@@ -110,20 +110,20 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 
 ## B. Stage 7 baseline and safe preparation
 
-- Stage 7 code SHA and requirement baseline: `77c8f95baacb6cf2dd2723d3d6ae7ed4b4291fef` (integrated `main` on GitHub at the start of Stage 8) / SmartCare A3 Requirements Baseline 2026, revision 2
-- Baseline test command / working directory / observed result / evidence: `python -m pytest -q` / `project/` / 12 passed in 0.08s; `git status --short` empty (Lemuel, 3 Nov 2026) [add each member's matching result]
-- Clean preparation SHA if a record-only commit followed Stage 7: [complete]
-- Branch and preparer / how teammates obtained this branch: `debug/stage8` / [complete] / `git fetch` then `git switch debug/stage8`
-- Downloaded tool version, source SHA256 and --check outcome: [complete: version line printed by the tool, `sha256sum` of prepare_debugging.py, and the CHECK ONLY line]
-- --apply and --verify output summaries / artefact references: [complete]
-- Bounded diff inspected and recovery location (not committed): [complete: `git diff --stat` showed only `project/smartcare/data_store.py`]; backup in `project/.stage8_faults/` (ignored by .gitignore, not committed)
-- Prepared faulty-state commit SHA: [complete]
-- Preparation or recovery issues and resolution, if any: [complete or "None"]
-- Initial prepared full-suite command / result / key failures: `python -m pytest -q` / `project/` / [complete]
+- Stage 7 code SHA and requirement baseline: `77c8f95baacb6cf2dd2723d3d6ae7ed4b4291fef` (integrated `main`, merge of PR #5 `feature/stage7-testing`) / SmartCare A3 Requirements Baseline 2026, revision 2
+- Baseline test command / working directory / observed result / evidence: `python -m pytest -q` / `project/` / 12 passed in 0.08s; `git status --short` empty (Lemuel, 3 Nov 2026) [add Joshua's and James's matching results]
+- Clean preparation SHA if a record-only commit followed Stage 7: not applicable. No record commit was made before preparation, so the clean preparation SHA is the Stage 7 SHA `77c8f95` (printed by the tool as "Baseline Git SHA").
+- Branch and preparer / how teammates obtained this branch: `debug/stage8` / Lemuel / pushed to origin; teammates run `git fetch` then `git switch debug/stage8` and do not rerun the utility
+- Downloaded tool version, source SHA256 and --check outcome: `prepare_debugging.py` 1.1 / tool SHA256 `cd9a6786cd9fb518376716fb15a33be63ccbb80282600b453fbf6095b3754f30` / "Stage 8 tool 1.1; preflight PASS; baseline SHA256 986c5445532ffd1d85e88639b6b6f34b84e15b2bbfc1882511a96938c3b641f6; Baseline Git SHA 77c8f95…; CHECK ONLY: project unchanged; both proposed fault signatures verified in a temporary copy"
+- --apply and --verify output summaries / artefact references: --apply: "preflight PASS; PREPARED: F8-01 practitioner conflict; F8-02 retained-history lookup; Verified expected failures: test_f8_01_conflict; test_f8_02_history (2 failed); Backup/hash recorded in .stage8_faults". --verify: "VERIFIED: exactly 2 expected failures; both approved symptom signatures present"
+- Bounded diff inspected and recovery location (not committed): `git status --short` showed only `project/smartcare/data_store.py`; `git diff --stat` = 1 file changed, 11 insertions(+), 18 deletions(-). Backup in `project/.stage8_faults/` (ignored by .gitignore, not committed)
+- Prepared faulty-state commit SHA: `6864747` on `debug/stage8`
+- Preparation or recovery issues and resolution, if any: none. The tool was first run from the wrong location (file not found) before it was unzipped beside the repository; no project files were changed by that attempt
+- Initial prepared full-suite command / result / key failures: `python -m pytest -q` / `project/` / 4 failed, 8 passed in 0.13s. F8-01: `test_starter.py::test_conflict_rule_and_different_practitioner` and `::test_double_booking_rejected` (DID NOT RAISE ValueError). F8-02: `test_starter.py::test_cancel_appointment` and `::test_cancel_appointment_twice` (LookupError: Appointment not found, raised from `services.py:136` `find_appointment`)
 
 ## C. F8-01 diagnosis and repair
 
-- Symptom / observed behaviour: [complete from your run]
+- Symptom / observed behaviour: after cancelling `A1`, the appointment is still in `list_appointments()` with status CANCELLED, but `store.find_appointment('A1')` returns `None` and `AppointmentService.find_appointment('A1')` raises `LookupError: Appointment not found`. A second cancel raises LookupError instead of the guarded ValueError (`test_starter.py::test_cancel_appointment_twice`).
 - Expected behaviour and requirement: booking the same practitioner at the same datetime as an existing SCHEDULED appointment raises ValueError, and the store is unchanged (FR-05 / AC-04.1). A different practitioner at that time is booked successfully (AC-04.2). No patient-conflict or duration-overlap rule.
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `P2`, `D1`, `D2`; book `A1` = `P1`/`D1` at 2026-10-01 09:00; book `A2` = `P2`/`D1` at the same time (expect ValueError, store unchanged); book `A3` = `P2`/`D2` at the same time (expect SCHEDULED).
 - Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` (TEST-R01) / [complete: exact failure line]
@@ -137,7 +137,7 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 - Symptom / observed behaviour: [complete from your run]
 - Expected behaviour and requirement: after cancelling, the same object is retained with CANCELLED status, stays in `list_appointments()`, and is returned by both store and service lookup (FR-06, FR-07, BR-07, AC-05.2, FR-08). A repeated cancel is still rejected with ValueError and changes nothing.
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `D1`; book `A1` at 2026-10-01 09:00; cancel `A1`; check status, list membership, `store.find_appointment('A1')` (None vs object) and `service.find_appointment('A1')` (LookupError vs object); cancel `A1` again (expect ValueError).
-- Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_cancelled_appointment_is_still_found` (TEST-R02) / [complete: exact failure line]
+- Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_cancelled_appointment_is_still_found` (TEST-R02) / `tests\test_regressions.py:71: AssertionError: assert None is <smartcare.domain.Appointment object>`, where `None = find_appointment('A1')`; lines 69–70 passed. Tested at `92a0a5a`.
 - Human hypothesis and intended checks: see E, F8-02.
 - Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
 - Smallest justified fix / diff / why other behaviour is preserved: [complete]
@@ -153,9 +153,9 @@ Evidence intended to inspect / competing explanation / discriminating check: [co
 Member and saved sequence/time or commit showing this preceded consultation: [complete]
 
 ### F8-02 human entry
-Likely cause and why plausible: [complete]
-Evidence intended to inspect / competing explanation / discriminating check: [complete]
-Member and saved sequence/time or commit showing this preceded consultation: [complete]
+Likely cause and why plausible: The cancelled appointment is still in list_appointments() with status CANCELLED (R lines 69–70 pass), so I don't think it was deleted or replaced. Lookup works before cancelling and only fails afterwards, and the only thing cancel changes is the status. So my guess is that SmartCareDataStore.find_appointment checks the appointment's status and skips (returns None for) appointments that are cancelled, instead of matching on the ID alone. The service then turns that None into LookupError.
+
+Evidence intended to inspect / competing explanation / discriminating check: I will read find_appointment in smartcare/data_store.py to see whether it has any condition on status. Competing explanation 1: cancel_appointment or Appointment.cancel changes or removes the stored object, so the ID no longer matches. Competing explanation 2: the service's find_appointment is wrong rather than the store's. Discriminating checks: print appointment.appointment_id after cancelling (should still be 'A1'); call data_store.find_appointment('A1') directly (if it returns None, the store is at fault, not the service); and look up a SCHEDULED appointment the same way (if that works, the problem is specific to cancelled status).
 
 ## F. GitHub Copilot prompts, findings and human decisions
 
