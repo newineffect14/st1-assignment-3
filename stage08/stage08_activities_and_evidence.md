@@ -10,7 +10,7 @@ Record owner / contribution links for each member: Record owner: Lemuel Legaspi.
 
 Use concise results and accessible artefact links rather than copying entire logs. Keep human-first entries before consulting GitHub Copilot. Link shared evidence once; do not repeat it across sections. No entries below are specimen answers or claimed results.
 
-File shorthand (paths relative to `project/`): **R** = `tests/test_regressions.py` (Stage 8, student-authored). Test IDs TEST-R01 to TEST-R03 are in each docstring.
+File shorthand (paths relative to `project/`): **R** = `tests/test_regressions.py` (Stage 8, student-authored). Test IDs TEST-R01 to TEST-R04 are in each docstring.
 
 ## A. Tutorial activities
 
@@ -90,9 +90,9 @@ Response and reason (based on R `test_cancelled_appointment_is_still_found`; con
 
 | Rank | Plausible cause | Discriminating check |
 |---|---|---|
-| [complete] | `find_appointment` skips appointments by status | Read the method body; book without cancelling and check whether lookup works; check whether line 70 passes |
-| [complete] | Cancellation removes the appointment from the store | Check whether `list_appointments()` still holds the object after cancel (line 70) |
-| [complete] | The ID is changed or not trimmed the same way during cancel or lookup | Print `appointment.appointment_id` after cancelling; compare it with `'A1'` |
+| 1 (best fit) | `find_appointment` skips appointments by status | Read the method body; book without cancelling and check whether lookup works; check whether line 70 passes. Observed: the method filters on `status.value != "cancelled"`, lookup worked while SCHEDULED, and line 70 passed. **Supported.** |
+| 2 | Cancellation removes the appointment from the store | Check whether `list_appointments()` still holds the object after cancel (line 70). Observed: line 70 passed, so the object is still stored. **Ruled out.** |
+| 3 | The ID is changed or not trimmed the same way during cancel or lookup | Print `appointment.appointment_id` after cancelling; compare it with `'A1'`. Observed: the ID was still `'A1'` and the same `id()` (runtime check in `stage08/copilot_f8_02.md`). **Ruled out.** |
 
 Rank these yourselves after your run, using the evidence you actually see.
 
@@ -105,8 +105,8 @@ Response and reason: The first place you look usually isn't where the cause is, 
 
 
 Classification responses (1–5, each with reason): see A.1.
-Tutorial debugging record — expected; observed; reproduction; hypothesis; evidence to inspect: see A.2. [complete observed and hypothesis]
-Traceback — exception/assertion; expected/observed values; test line; call path; requirement; ranked causes and discriminating checks: see A.5. [complete observed values and ranking]
+Tutorial debugging record — expected; observed; reproduction; hypothesis; evidence to inspect: see A.2.
+Traceback — exception/assertion; expected/observed values; test line; call path; requirement; ranked causes and discriminating checks: see A.5.
 
 ## B. Stage 7 baseline and safe preparation
 
@@ -178,8 +178,8 @@ Final human conclusion and comparison with initial hypothesis: the root cause is
 
 | Checkpoint | Code SHA or precise diff | Command and working directory | Actual result and artefact reference |
 |---|---|---|---|
-| F8-01 before repair | [complete] | `python -m pytest -q tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` in `project/` | [complete] |
-| F8-01 after repair | [complete] | same | [complete] |
+| F8-01 before repair | `92a0a5a` (prepared fault `6864747` + regression tests) | `python -m pytest -q tests/test_regressions.py` in `project/` | TEST-R01 failed: `tests/test_regressions.py:46: Failed: DID NOT RAISE <class 'ValueError'>` (2 failed, 1 passed) |
+| F8-01 after repair | `d10f930` | `python3 -m pytest -q tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` in `project/` | 1 passed in 0.01s (Joshua, 4 Nov 2026) |
 | F8-02 before repair | `92a0a5a` (prepared fault `6864747` + regression tests) | `python -m pytest -q tests/test_regressions.py` in `project/` | TEST-R02 failed: `tests\test_regressions.py:71: AssertionError: assert None is <Appointment>` (lines 69–70 passed) |
 | F8-02 after repair | `0e27973` | `python -m pytest -q tests/test_regressions.py::test_cancelled_appointment_is_still_found` in `project/` | 1 passed in 0.03s (Lemuel, 4 Nov 2026) |
 | Full suite after both repairs, before refactor | `0e27973` | `python -m pytest -q` in `project/` | 15 passed in 0.04s (12 retained + 3 regression tests) |
@@ -188,6 +188,7 @@ Explain how the assertions detect each relevant incorrect result and protect pre
 - TEST-R01 uses `pytest.raises(ValueError)` around the same-practitioner booking, so a booking that wrongly succeeds fails the test. `list_appointments() == before` and `find_appointment('A2') is None` catch a booking that is rejected but still stored. Booking `A3` with `D2` catches the opposite mistake, where different practitioners are treated as a conflict (AC-04.2).
 - TEST-R02 checks status, list membership and identity (`is`, not `is not None`) for both store and service lookup. A lookup that returns None, raises LookupError or returns a different object all fail. The final repeated cancel checks that the FR-06 guard still raises ValueError and doesn't change anything after the repair.
 - TEST-R03 checks that a cancelled appointment doesn't block the same slot, so the "SCHEDULED only" part of the conflict rule is protected while F8-01 is repaired and during the refactor.
+- TEST-R04 (added in `70e7415` after PR #9 review feedback from Joshua) checks that the F8-02 repair didn't change the "not found" contract: an unknown ID still returns `None` from the store and raises LookupError from the service, a blank ID still raises ValueError, and no record is created. 4 passed in `test_regressions.py`, 16 passed in the full suite.
 
 Unrelated failures investigated / resolution: not applicable. Every failure after preparation (4 in `test_starter.py`, 2 in `test_regressions.py`) traced to F8-01 or F8-02, and all passed once both repairs were applied.
 
