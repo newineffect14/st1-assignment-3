@@ -193,10 +193,10 @@ Unrelated failures investigated / resolution: not applicable. Every failure afte
 
 ## H. Refactoring decision and before/after verification
 
-Smell and exact location: magic status string. In `project/smartcare/data_store.py`, `SmartCareDataStore.has_practitioner_conflict` compares `appointment.status.value == "scheduled"` instead of using the existing `AppointmentStatus` enum. [complete: line number]
-Small proposed structural change / why justified: replace that comparison with `appointment.status is AppointmentStatus.SCHEDULED`, and add `AppointmentStatus` to the domain import in `data_store.py`. The enum is already the project's single definition of the statuses (Stage 4). A string literal can be mistyped without any error, and the enum makes the rule's intent clear. It's a one-line change, with no new architecture or dependency.
-External behaviour to preserve / relevant tests: only SCHEDULED appointments for the same practitioner at the same time conflict; cancelled ones do not; different practitioners are allowed; the store is unchanged after a rejected booking. Tests: TEST-R01 and TEST-R03 in `tests/test_regressions.py`, plus every existing conflict test in the retained suite (list them by name: [complete]).
-Before result: see G, full passing suite.
+Smell and exact location: magic status string. In `project/smartcare/data_store.py`, `SmartCareDataStore.has_practitioner_conflict` compares `appointment.status.value == "scheduled"` instead of using the existing `AppointmentStatus` enum. Line 111.
+Small proposed structural change / why justified: replace that comparison with `appointment.status is AppointmentStatus.SCHEDULED`. `AppointmentStatus` is already imported from `smartcare.domain` (import block at line 6), so no import change is needed. The enum is already the project's single definition of the statuses (Stage 4). A string literal can be mistyped without any error, and the enum makes the rule's intent clear. It's a one-line change, with no new architecture or dependency.
+External behaviour to preserve / relevant tests: only SCHEDULED appointments for the same practitioner at the same time conflict; cancelled ones do not; different practitioners are allowed; the store is unchanged after a rejected booking. Tests: TEST-R01 and TEST-R03 in `tests/test_regressions.py`, plus every existing conflict test in the retained suite (`test_starter.py::test_conflict_rule_and_different_practitioner` and `test_starter.py::test_double_booking_rejected`; TEST-R01 is `test_same_practitioner_same_time_is_rejected` and TEST-R03 is `test_cancelled_slot_can_be_rebooked`).
+Before result: `python3 -m pytest -q` from `project/` on `525a0de`: 15 passed in 0.02s (see also G).
 Actual change / diff / separate refactor SHA: [complete]
 Focused and full after-refactor commands / working directory / results / evidence: [complete]
 Result — accepted, revised or rejected / reason / behaviour-preservation conclusion: [complete]
