@@ -1,7 +1,10 @@
 """Stage 9 service listing and integrated workflow tests (QRY-04, UI-01)."""
 
 
+import subprocess
+import sys
 from datetime import datetime
+from pathlib import Path
 from typing import Final
 
 import pytest
@@ -16,6 +19,23 @@ from smartcare.services import (
 
 BOOKING_TIME: Final[datetime] = datetime(2026, 10, 1, 9, 0)
 
+PROJECT_DIR: Final[Path] = Path(__file__).resolve().parents[1]
+
+
+def run_console(lines: list[str]) -> str:
+    """Run the real interactive menu with scripted input and return its
+    output.
+    """
+    result: subprocess.CompletedProcess[str] = subprocess.run(
+        [sys.executable, 'main.py', '--interactive'],
+        cwd=PROJECT_DIR,
+        input='\n'.join(lines) + '\n',
+        capture_output=True,
+        text=True,
+        timeout=10,
+    )
+    assert result.returncode == 0
+    return result.stdout
 
 def foundation() -> tuple[SmartCareDataStore, AppointmentService]:
     """Return a fresh store with P1, D1 and D2 plus an appointment
@@ -140,3 +160,61 @@ def test_listing_uses_registered_practitioner_id() -> None:
     assert appointment_service.list_practitioner_appointments('  D1  ') == [
         appointment,
     ]
+
+def test_console_ui01_demonstration() -> None:
+    """TEST-W07 / UI-01: verify the full menu demonstration in one
+    session.
+    """
+    output: str = run_console([
+        '1', 'P1', 'Alex Example',
+        '3', 'D1', 'Taylor Example', 'General',
+        '3', 'D2', 'Morgan Example', 'General',
+        '2', 'P1',
+        '4', 'D1',
+        '4', 'D2',
+        '5', 'A1', 'P1', 'D1', '2026-10-01 09:00',
+        '5', 'A9', 'P1', 'D1', '2026-10-01 09:00',
+        '5', 'A2', 'P1', 'D2', '2026-10-01 09:00',
+        '6', 'A1',
+        '7', 'A1',
+        '8', 'D1', '',
+        '8', 'D1', 'scheduled',
+        '5', 'A3', 'P1', 'D1', '2026-10-01 09:00',
+        '8', 'D1', '',
+        '0',
+    ])
+    assert 'Found patient P1: Alex Example' in output
+    assert 'Booked A2: P1 with D2, 2026-10-01 09:00, scheduled' in output
+    assert 'A1: P1 with D1, 2026-10-01 09:00, cancelled' in output
+    assert 'No matching appointments.' in output
+    assert 'Booked A3: P1 with D1, 2026-10-01 09:00, scheduled' in output
+    assert 'Goodbye' in output
+
+
+def test_console_ui02_recovers_from_invalid_input() -> None:
+    """TEST-W08 / UI-02: verify invalid input is reported and the menu
+    continues without partial changes.
+    """
+    output: str = run_console([
+        '9',
+        '2', '   ',
+        '2', 'P9',
+        '1', 'P1', 'Alex Example',
+        '1', 'P1', 'Replacement',
+        '3', 'D1', 'Taylor Example', 'General',
+        '5', 'A5', 'P9', 'D1', '2026-10-01 09:00',
+        '5', 'A6', 'P1', 'D1', '2026-13-01 09:00',
+        '7', 'A5',
+        '6', 'A7',
+        '5', 'A1', 'P1', 'D1', '2026-10-01 09:00',
+        '6', 'A1',
+        '6', 'A1',
+        '8', 'D1', 'bogus',
+        '2', 'P1',
+        '0',
+    ])
+    assert 'Unknown option; choose 0-8.' in output
+    assert output.count('Error:') >= 9
+    # The original patient was not overwritten by the duplicate.
+    assert 'Found patient P1: Alex Example' in output
+    assert 'Goodbye' in output
