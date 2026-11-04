@@ -92,3 +92,23 @@ def test_cancelled_slot_can_be_rebooked() -> None:
     assert isinstance(rebooked, Appointment)
     assert rebooked.status is AppointmentStatus.SCHEDULED
     assert len(data_store.list_appointments()) == 2
+
+
+def test_unknown_appointment_id_is_still_reported_missing() -> None:
+    """TEST-R04 F8-02 boundary, FR-08 lookup contract (added after PR #9 review).
+
+    After the F8-02 repair, removing the status filter must not make
+    lookup return the wrong thing: an unknown ID still gives None from
+    the store and LookupError from the service, and a blank ID is still
+    rejected with ValueError. No appointment is created.
+    """
+    data_store, appointments = clinic()
+    appointments.book_appointment('A1', 'P1', 'D1', WHEN)
+    appointments.cancel_appointment('A1')
+
+    assert data_store.find_appointment('A9') is None
+    with pytest.raises(LookupError):
+        appointments.find_appointment('A9')
+    with pytest.raises(ValueError):
+        appointments.find_appointment('   ')
+    assert len(data_store.list_appointments()) == 1
