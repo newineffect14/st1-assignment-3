@@ -128,9 +128,9 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `P2`, `D1`, `D2`; book `A1` = `P1`/`D1` at 2026-10-01 09:00; book `A2` = `P2`/`D1` at the same time (expect ValueError, store unchanged); book `A3` = `P2`/`D2` at the same time (expect SCHEDULED).
 - Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` (TEST-R01) / `tests/test_regressions.py:46: Failed: DID NOT RAISE <class 'ValueError'>`. Tested at `92a0a5a`.
 - Human hypothesis and intended checks: see E, F8-01.
-- Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
-- Smallest justified fix / diff / why other behaviour is preserved: [complete]
-- Repair SHA / focused verification result: [complete]
+- Supported root cause and inspected code/runtime evidence: in `SmartCareDataStore.has_practitioner_conflict`, the practitioner condition was `appointment.practitioner.practitioner_id != practitioner_id`, so the loop matched SCHEDULED appointments belonging to *other* practitioners at that time. Runtime evidence (`stage08/copilot_f8_01.md`): for stored A1 (D1, SCHEDULED, same time), checking D1 gave `!=` False → result False, and checking D2 gave `!=` True → result True. The time and status terms were True in both cases, so only the practitioner comparison explains the opposite results.
+- Smallest justified fix / diff / why other behaviour is preserved: one operator in one line: `appointment.practitioner.practitioner_id != practitioner_id` → `== practitioner_id`. The `exclude_appointment_id`, `date_time` and SCHEDULED-only conditions are unchanged, so cancelled slots can still be rebooked (TEST-R03 passes) and booking validation in the service is untouched.
+- Repair SHA / focused verification result: `d10f930` / `python3 -m pytest -q tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` in `project/` → 1 passed. Full suite → 3 failed, 12 passed; all 3 remaining failures are F8-02 (not yet repaired at this point).
 
 ## D. F8-02 diagnosis and repair
 
