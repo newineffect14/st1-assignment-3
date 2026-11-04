@@ -74,12 +74,25 @@ Cover QRY-01–04, FP-01–03, UI-01–02 and relevant FR-01–09. Explain empty
 
 | Requirement / test ID | Code location | Case and meaningful assertion | Actual result | Evidence link |
 |---|---|---|---|---|
-| | | | | |
+| FP-03 / TEST-Q01 | queries.py `appointment_sort_key` | Key equals `(date_time, appointment_id)` | Pass | project/tests/test_queries.py::test_sort_key_returns_date_time_then_id |
+| QRY-01 / TEST-Q02 | queries.py `select_appointments` | Only D1 returned; D2 appointment is the control | Pass | test_queries.py::test_only_requested_practitioner_is_selected |
+| QRY-02 / TEST-Q03 | queries.py `select_appointments` | Default None keeps scheduled, cancelled and completed | Pass | test_queries.py::test_default_status_includes_every_status |
+| QRY-02 / TEST-Q04 | queries.py `select_appointments` | Each enum filters correctly; no match returns `[]` | Pass | test_queries.py::test_explicit_status_filter_and_no_match |
+| QRY-03 / TEST-Q05 | queries.py, named key | A1 and A2 share 09:00 so ID breaks the tie; result equals sort by named key | Pass | test_queries.py::test_orders_by_time_then_id_tie_break |
+| FP-01 / TEST-Q06 | queries.py | Source order and fields unchanged; repeated call gives same result | Pass | test_queries.py::test_source_unchanged_and_repeatable |
+| FP-02 / TEST-Q07 | queries.py | New list for empty, unsorted and already-sorted input; same objects inside | Pass | test_queries.py::test_returns_new_list_for_empty_sorted_and_unsorted |
+| QRY-04 / TEST-W01 | services.py `list_practitioner_appointments` | Known practitioner with no matches returns `[]` | Pass | project/tests/test_workflows.py::test_known_practitioner_without_appointments_returns_empty |
+| QRY-04 / TEST-W02 | services.py | Valid unknown ID raises LookupError | Pass | test_workflows.py::test_unknown_practitioner_raises_lookup_error |
+| QRY-04 / TEST-W03 | services.py | Blank ID raises ValueError | Pass | test_workflows.py::test_blank_practitioner_id_raises_value_error |
+| QRY-04 / TEST-W04 | services.py | Text `'scheduled'` raises ValueError, not an empty list | Pass | test_workflows.py::test_text_status_raises_value_error |
+| FR-07, AC-05.2 / TEST-W05 | services.py | Cancelled A1 is the same object, still listed with all statuses, excluded from SCHEDULED | Pass | test_workflows.py::test_conflict_cancel_history_and_freed_slot_workflow |
+| QRY-04 / TEST-W06 | services.py | `'  D1  '` uses the registered ID and finds A1 | Pass | test_workflows.py::test_listing_uses_registered_practitioner_id |
 
-Include practitioner isolation, every enum status/default all, equal-time ID tie-break, named-key reuse, repeated calls, empty/already-sorted fresh lists, unchanged source order/fields, known-empty/unknown/invalid service cases and retained history.
+Full suite: `python3 -m pytest -q` in project/ – 31 passed at `bf7b2f6`.
 
-Purity explanation from code inspection, including absence of hidden state and I/O: <!-- response -->
-What the tests do and do not establish: <!-- response -->
+Purity explanation from code inspection, including absence of hidden state and I/O: `select_appointments` only uses its three arguments. It builds a new local list, never calls `.sort()` on the input, never changes an appointment, has no print or input, and does not import the store or services. `appointment_sort_key` only reads two fields and returns a tuple.
+
+What the tests do and do not establish: The tests show the right appointments are selected and ordered, the source list is unchanged and repeated calls match for the cases tested. They do not prove purity for every possible input; that also relies on reading the code for hidden state and side effects.
 
 ## D. Integrated console and workflow evidence
 
@@ -93,15 +106,19 @@ Include registration/find, booking, conflict rejection, different-practitioner b
 
 ## E. GitHub Copilot review and human decisions
 
-Human design completed before AI: <!-- reference -->
-Actual prompt/context supplied: <!-- paste or accessible reference -->
-Actual response: <!-- accessible reference -->
+Human design completed before AI: Sections A and B committed at `c1757ee` before Copilot was used.
+Actual prompt/context supplied: Handout prompt plus queries.py, services.py, console.py and test_queries.py – see [copilot_review.md](copilot_review.md).
+Actual response: Copied in full in [copilot_review.md](copilot_review.md). Copilot Chat, Ask mode, at `f3cc6f4`.
 
 | AI finding | Code/test evidence | Severity | Accept/Modify/Reject and reason | Change or no change | Actual verification |
 |---|---|---|---|---|---|
-| | | | | | |
+| Critical/Important: none found | Observed evidence matched our own reading of queries.py, services.py and console.py | – | Accept as an observation, but we checked it against the tests ourselves rather than trusting it | No change | 31 passed |
+| EOF during a field prompt is not handled | console.py `input()` calls inside each option | Optional | Reject – a keyboard user cannot trigger this; not in UI-02; fields are read before any service call so no partial write | No change | Read console.py: no service call happens before all fields are read |
+| Conflict rule can be bypassed by direct store insertion | data_store.py `add_appointment`, services.py `book_appointment` | Optional | Reject – over-engineering; conflict checking belongs in the service and the store contract is unchanged since Stage 8 | No change | TEST-W05 and Stage 8 regressions still pass through the service |
+| Query helper does not reject invalid status | queries.py `select_appointments` | Optional | Reject – handout says the pure helper assumes valid filter values; the service validates | No change | TEST-W04 shows the service rejects `'scheduled'` |
+| UI-02 test does not check the malformed-date booking was not stored | test_workflows.py UI-02 test | Optional | Accept – a fair gap in our no-partial-state evidence | Added `'7', 'A6'` lookup and raised the error count to 10 (`bf7b2f6`) | 31 passed after the change |
 
-Responsibility check: explain how domain invariants, shared-store collections, service coordination, pure queries and console effects remain separate: <!-- response -->
+Responsibility check: Domain objects validate their own fields and Appointment owns the cancel rule. The store only holds and finds records. Services coordinate lookups, conflicts and validated listing. The pure query only filters and sorts what it is given. The console only reads input, converts text, calls services and prints results.
 
 ## F. Required reflections
 
