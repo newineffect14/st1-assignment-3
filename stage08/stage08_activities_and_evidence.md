@@ -5,8 +5,8 @@ UG and PG | One evolving group project | Complete this blank record using the St
 All Assignment 3 stage materials are provided from the beginning. Complete this stage only after the previous applicable stage has been integrated, verified and recorded. Use this supplied record in stage08/ in your EXISTING repository. Preserve project/, all earlier tests, records and responses. Do not download another starter or copy staff solutions. The Stage 8 preparation utility is supplied or run by teaching staff when Stage 8 begins. Follow your tutor’s controlled workflow and the handout. If temporarily supplied, keep it outside the repository in a sibling Stage_8_Assets/ folder; exclude it from Git and the final submission.
 
 Group/tutorial: Group 5, Thursday 2:30
-Members and UG/PG cohorts: [complete]
-Record owner / contribution links for each member: [complete]
+Members and UG/PG cohorts: Lemuel Legaspi (UG); Joshua Sisourath (UG); James Nguyen (UG)
+Record owner / contribution links for each member: Record owner: Lemuel Legaspi. Contributions: see section I.
 
 Use concise results and accessible artefact links rather than copying entire logs. Keep human-first entries before consulting GitHub Copilot. Link shared evidence once; do not repeat it across sections. No entries below are specimen answers or claimed results.
 
@@ -214,9 +214,11 @@ Each member's substantive contribution and artefact: [complete]
 
 ## J. Required reflections
 
-1. Which Copilot diagnosis appeared convincing but lacked evidence? [complete; report honestly if none and discuss the least-supported real suggestion]
-2. What evidence changed your group's view? [complete]
-3. How did regression tests protect the refactoring? [complete]
+1. Which Copilot diagnosis appeared convincing but lacked evidence? For F8-01, Copilot's second-ranked cause (the appointment being stored or retrieved with the wrong practitioner) sounded reasonable and came with a confident step-by-step check, but that check called `store.get_appointment("A1")`, a method that does not exist in our project (`hasattr(s, 'get_appointment')` → False). The suggestion was built on code Copilot assumed rather than code it had seen. When Joshua inspected the real stored appointment with `find_appointment`, its practitioner was `'D1'` as expected, so the explanation was rejected. For F8-02, Copilot's second cause (cancel replacing or changing the object) was also plausible but untested until Lemuel compared `id()`, the ID and list membership before and after cancelling; all three were unchanged.
+
+2. What evidence changed your group's view? Both initial hypotheses turned out to be right, but before the runtime checks they were only guesses, and each defect had believable alternatives. For F8-02, seeing the same object (same `id()` 2720909534144, ID `'A1'`) still in `list_appointments()` while `find_appointment` returned `None` ruled out "the appointment was removed or replaced" and narrowed the fault to the store's lookup condition. For F8-01, calling `has_practitioner_conflict` directly and getting False for the same practitioner but True for a different one, while the time and status terms were True in both cases, showed that only the practitioner comparison could explain opposite results. That moved us from "the conflict check is broken somehow" to one specific operator. It also showed that the existing `test_starter.py` failures alone were not enough: they told us something was wrong, but not which condition.
+
+3. How did regression tests protect the refactoring? [complete after James's refactor, using his real results. Draft: before the refactor the full suite passed (15 passed at `0e27973`). After replacing `status.value == "scheduled"` with `status is AppointmentStatus.SCHEDULED`, TEST-R01, TEST-R03 and the starter conflict tests still passed, giving [result] at [refactor SHA]. Because TEST-R03 books a cancelled slot again and TEST-R01 checks both the same-practitioner rejection and the different-practitioner booking, a mistake in the changed line would have failed them straight away. James's temporary check of changing SCHEDULED to CANCELLED [did/did not] make R01 and R03 fail, confirming the tests really cover this line.]
 
 ## K. Ten formative questions
 
