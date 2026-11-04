@@ -203,14 +203,18 @@ Result – accepted, revised or rejected / reason / behaviour-preservation concl
 
 ## I. Git, human review and integration
 
-Issues for both defects / refactor scope and owners: [complete]
-Branch / prepared, repair and refactor checkpoints: see B, C, D and H.
-PR link and another member's reviewer identity: [complete]
-Key human feedback, difference from Copilot findings and response/outcome: [complete]
-Actual review approval / merge evidence: [complete]
-Integrated code SHA and team pull/retest command / working directory / result: [complete] / `git switch main`, `git pull`, `python -m pytest -q` in `project/` / [complete]
-Evidence-only later SHA / explanation if different: [complete or not applicable]
-Each member's substantive contribution and artefact: [complete]
+Issues for both defects / refactor scope and owners: #6 F8-01 practitioner conflict (owner Joshua Sisourath); #7 F8-02 cancelled appointment lookup (owner Lemuel Legaspi); #8 refactor, magic "scheduled" string → AppointmentStatus enum (owner James Nguyen).
+Branch / prepared, repair and refactor checkpoints: `debug/stage8`. Prepared `6864747` → regression tests `92a0a5a` → F8-02 hypothesis `fb377e0` → F8-02 Copilot `c616202` → F8-01 hypothesis `7921cf9` → F8-01 Copilot `61f0b8b` → F8-01 repair `d10f930` → F8-02 repair `0e27973` (15 passed) → H plan `f3712d0` → refactor `9baf334` (15 passed) → H record `7621871`. See B, C, D and H.
+PR link and another member's reviewer identity: [complete after PR is opened]
+Key human feedback, difference from Copilot findings and response/outcome: [complete after James's review]
+Actual review approval / merge evidence: [complete after merge]
+Integrated code SHA and team pull/retest command / working directory / result: [merged SHA] / `git switch main`, `git pull`, `python -m pytest -q` in `project/` / Lemuel: [result]; Joshua: [result]; James: [result]
+Evidence-only later SHA / explanation if different: [complete after the final record commit]
+Each member's substantive contribution and artefact:
+- Lemuel Legaspi: ran the Stage 8 preparation utility and committed the prepared state (`6864747`); added regression tests TEST-R01 to R03 (`92a0a5a`); diagnosed and repaired F8-02, including the human hypothesis, Copilot review and runtime check (`fb377e0`, `c616202`, `0e27973`); record owner (sections A, B, D, G, I, J, K, L); created issues #6–#8 and the PR.
+- Joshua Sisourath: diagnosed and repaired F8-01, including the human hypothesis, runtime checks and Copilot review (`7921cf9`, `61f0b8b`, `d10f930`); recorded section C and G's F8-01 rows (`86cf05a`); reviewed James's refactor commit on the PR.
+- James Nguyen: planned the refactor in section H before editing (`f3712d0`), implemented the one-line behaviour-preserving refactor (`9baf334`), verified it (15 passed before and after, plus a SCHEDULED→CANCELLED self-check showing 4 conflict tests protect the line), and recorded section H, including the revision that no import change was needed (`7621871`); human PR reviewer.
+- AI assistance disclosure: Claude (Anthropic) was used to guide the Git workflow, draft the regression tests, draft tutorial and formative answers and reflections, and help word record entries, including drafting both section E hypotheses (disclosed in E). GitHub Copilot was used for the section F consultations. All commands, test runs, runtime checks, Copilot sessions, commits and code changes were done by the group members named above.
 
 ## J. Required reflections
 
@@ -218,7 +222,7 @@ Each member's substantive contribution and artefact: [complete]
 
 2. What evidence changed your group's view? Both initial hypotheses turned out to be right, but before the runtime checks they were only guesses, and each defect had believable alternatives. For F8-02, seeing the same object (same `id()` 2720909534144, ID `'A1'`) still in `list_appointments()` while `find_appointment` returned `None` ruled out "the appointment was removed or replaced" and narrowed the fault to the store's lookup condition. For F8-01, calling `has_practitioner_conflict` directly and getting False for the same practitioner but True for a different one, while the time and status terms were True in both cases, showed that only the practitioner comparison could explain opposite results. That moved us from "the conflict check is broken somehow" to one specific operator. It also showed that the existing `test_starter.py` failures alone were not enough: they told us something was wrong, but not which condition.
 
-3. How did regression tests protect the refactoring? [complete after James's refactor, using his real results. Draft: before the refactor the full suite passed (15 passed at `0e27973`). After replacing `status.value == "scheduled"` with `status is AppointmentStatus.SCHEDULED`, TEST-R01, TEST-R03 and the starter conflict tests still passed, giving [result] at [refactor SHA]. Because TEST-R03 books a cancelled slot again and TEST-R01 checks both the same-practitioner rejection and the different-practitioner booking, a mistake in the changed line would have failed them straight away. James's temporary check of changing SCHEDULED to CANCELLED [did/did not] make R01 and R03 fail, confirming the tests really cover this line.]
+3. How did regression tests protect the refactoring? We only started the refactor once the full suite passed (15 passed at `525a0de`), so any later failure would point at the refactor rather than the defects. After James replaced `appointment.status.value == "scheduled"` with `appointment.status is AppointmentStatus.SCHEDULED` (line 111, `9baf334`), the focused regression tests gave 3 passed and the full suite 15 passed, the same as before. To check the tests actually cover that line, James temporarily changed `SCHEDULED` to `CANCELLED` (not committed): 4 tests failed straight away (TEST-R01, TEST-R03, `test_conflict_rule_and_different_practitioner` and `test_double_booking_rejected`), then 15 passed again once it was reverted. So the regression tests didn't just pass; they were shown to detect a wrong status in the exact line being changed, which is what made the refactor safe.
 
 ## K. Ten formative questions
 
