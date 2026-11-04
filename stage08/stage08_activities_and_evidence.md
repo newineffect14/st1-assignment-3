@@ -139,9 +139,9 @@ Traceback — exception/assertion; expected/observed values; test line; call pat
 - Minimal synthetic reproduction steps: fresh store; register `P1`, `D1`; book `A1` at 2026-10-01 09:00; cancel `A1`; check status, list membership, `store.find_appointment('A1')` (None vs object) and `service.find_appointment('A1')` (LookupError vs object); cancel `A1` again (expect ValueError).
 - Meaningful failing test path/name and exact relevant failure: `project/tests/test_regressions.py::test_cancelled_appointment_is_still_found` (TEST-R02) / `tests\test_regressions.py:71: AssertionError: assert None is <smartcare.domain.Appointment object>`, where `None = find_appointment('A1')`; lines 69–70 passed. Tested at `92a0a5a`.
 - Human hypothesis and intended checks: see E, F8-02.
-- Supported root cause and inspected code/runtime evidence: [complete after diagnosis]
-- Smallest justified fix / diff / why other behaviour is preserved: [complete]
-- Repair SHA / focused verification result: [complete]
+- Supported root cause and inspected code/runtime evidence: `SmartCareDataStore.find_appointment` only returned an appointment when `appointment.status.value != "cancelled"`, so a cancelled appointment that was still stored was skipped and `None` was returned; the service then raised LookupError. Runtime evidence (`stage08/copilot_f8_02.md`): same object (`id()` unchanged), same ID `'A1'` and still in `list_appointments()` after cancelling; lookup returned the object while SCHEDULED and `None` once CANCELLED.
+- Smallest justified fix / diff / why other behaviour is preserved: removed only the status condition: `if (appointment.appointment_id == appointment_id.strip() and appointment.status.value != "cancelled"):` → `if appointment.appointment_id == appointment_id.strip():`. Blank or invalid IDs still raise ValueError, a missing ID still returns None, IDs are still trimmed, and the same object is returned. The FR-06 guard still rejects a second cancel with ValueError (checked at the end of TEST-R02 and by `test_starter.py::test_cancel_appointment_twice`).
+- Repair SHA / focused verification result: `0e27973` / `python -m pytest -q tests/test_regressions.py::test_cancelled_appointment_is_still_found` in `project/` → 1 passed in 0.03s; full suite → 15 passed in 0.04s.
 
 ## E. Human-first hypotheses
 
@@ -180,16 +180,16 @@ Final human conclusion and comparison with initial hypothesis: the root cause is
 |---|---|---|---|
 | F8-01 before repair | [complete] | `python -m pytest -q tests/test_regressions.py::test_same_practitioner_same_time_is_rejected` in `project/` | [complete] |
 | F8-01 after repair | [complete] | same | [complete] |
-| F8-02 before repair | [complete] | `python -m pytest -q tests/test_regressions.py::test_cancelled_appointment_is_still_found` in `project/` | [complete] |
-| F8-02 after repair | [complete] | same | [complete] |
-| Full suite after both repairs, before refactor | [complete] | `python -m pytest -q` in `project/` | [complete] |
+| F8-02 before repair | `92a0a5a` (prepared fault `6864747` + regression tests) | `python -m pytest -q tests/test_regressions.py` in `project/` | TEST-R02 failed: `tests\test_regressions.py:71: AssertionError: assert None is <Appointment>` (lines 69–70 passed) |
+| F8-02 after repair | `0e27973` | `python -m pytest -q tests/test_regressions.py::test_cancelled_appointment_is_still_found` in `project/` | 1 passed in 0.03s (Lemuel, 4 Nov 2026) |
+| Full suite after both repairs, before refactor | `0e27973` | `python -m pytest -q` in `project/` | 15 passed in 0.04s (12 retained + 3 regression tests) |
 
 Explain how the assertions detect each relevant incorrect result and protect previous behaviour:
 - TEST-R01 uses `pytest.raises(ValueError)` around the same-practitioner booking, so a booking that wrongly succeeds fails the test. `list_appointments() == before` and `find_appointment('A2') is None` catch a booking that is rejected but still stored. Booking `A3` with `D2` catches the opposite mistake, where different practitioners are treated as a conflict (AC-04.2).
 - TEST-R02 checks status, list membership and identity (`is`, not `is not None`) for both store and service lookup. A lookup that returns None, raises LookupError or returns a different object all fail. The final repeated cancel checks that the FR-06 guard still raises ValueError and doesn't change anything after the repair.
 - TEST-R03 checks that a cancelled appointment doesn't block the same slot, so the "SCHEDULED only" part of the conflict rule is protected while F8-01 is repaired and during the refactor.
 
-Unrelated failures investigated / resolution: [complete or not applicable with reason]
+Unrelated failures investigated / resolution: not applicable. Every failure after preparation (4 in `test_starter.py`, 2 in `test_regressions.py`) traced to F8-01 or F8-02, and all passed once both repairs were applied.
 
 ## H. Refactoring decision and before/after verification
 
