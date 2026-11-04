@@ -206,11 +206,12 @@ Result – accepted, revised or rejected / reason / behaviour-preservation concl
 
 Issues for both defects / refactor scope and owners: #6 F8-01 practitioner conflict (owner Joshua Sisourath); #7 F8-02 cancelled appointment lookup (owner Lemuel Legaspi); #8 refactor, magic "scheduled" string → AppointmentStatus enum (owner James Nguyen).
 Branch / prepared, repair and refactor checkpoints: `debug/stage8`. Prepared `6864747` → regression tests `92a0a5a` → F8-02 hypothesis `fb377e0` → F8-02 Copilot `c616202` → F8-01 hypothesis `7921cf9` → F8-01 Copilot `61f0b8b` → F8-01 repair `d10f930` → F8-02 repair `0e27973` (15 passed) → H plan `f3712d0` → refactor `9baf334` (15 passed) → H record `7621871`. See B, C, D and H.
-PR link and another member's reviewer identity: [complete after PR is opened]
-Key human feedback, difference from Copilot findings and response/outcome: [complete after James's review]
-Actual review approval / merge evidence: [complete after merge]
-Integrated code SHA and team pull/retest command / working directory / result: [merged SHA] / `git switch main`, `git pull`, `python -m pytest -q` in `project/` / Lemuel: [result]; Joshua: [result]; James: [result]
-Evidence-only later SHA / explanation if different: [complete after the final record commit]
+PR link and another member's reviewer identity: PR #9 https://github.com/newineffect14/st1-assignment-3/pull/9 (`main` ← `debug/stage8`, opened by Lemuel). Reviewers: James Nguyen (newineffect14) and Joshua Sisourath (Joshua-Sisourath), neither the author of the whole PR.
+Key human feedback, difference from Copilot findings and response/outcome: Round 1, both requested changes. James pulled `6fbc57b`, got 15 passed, confirmed both fixes were minimal and matched FR-05/AC-04.1/AC-04.2 and FR-07/FR-08, but found record gaps (G F8-01 rows, A.5 ranking, A summary lines). Joshua asked for (1) a test that cancelled appointments stay stored and retrievable as CANCELLED, which is already TEST-R02 lines 69–72, so Lemuel pointed to it, and (2) a check that an unknown ID still behaves correctly after the F8-02 fix, so Lemuel added TEST-R04 (`70e7415`, 16 passed) and filled the record gaps (`8c17068`). Difference from Copilot: Copilot only ranked causes of each failure; the human reviewers checked the record's completeness and a boundary of the lookup contract (unknown IDs) that neither Copilot nor our original tests covered.
+Actual review approval / merge evidence: Round 2, both approved: Joshua ("the fix is simple and the tests cover the expected behaviour well") and James ("all changes that needed to be made was done"). GitHub showed 2 approvals and no conflicts. Merged by Lemuel with a merge commit (not squashed, so every checkpoint SHA is kept) on 4 Nov 2026: `af2da4a` "Merge pull request #9 from newineffect14/debug/stage8". Issues #6, #7 and #8 closed by the PR.
+Integrated code SHA and team pull/retest command / working directory / result: `af2da4a` / `git switch main`, `git pull`, `python -m pytest -q` (`python3` on Mac) in `project/` / Lemuel: 16 passed in 0.08s; Joshua: 16 passed at `af2da4a`; James: 16 passed at `af2da4a`.
+Evidence-only later SHA / explanation if different: this final record update is committed on `docs/stage08-record` and merged by a second PR, so the submitted SHA is later than `af2da4a`. It changes only `stage08/stage08_activities_and_evidence.md`; the code and tests are identical to `af2da4a`.
+
 Each member's substantive contribution and artefact:
 - Lemuel Legaspi: ran the Stage 8 preparation utility and committed the prepared state (`6864747`); added regression tests TEST-R01 to R03 (`92a0a5a`); diagnosed and repaired F8-02, including the human hypothesis, Copilot review and runtime check (`fb377e0`, `c616202`, `0e27973`); record owner (sections A, B, D, G, I, J, K, L); created issues #6–#8 and the PR.
 - Joshua Sisourath: diagnosed and repaired F8-01, including the human hypothesis, runtime checks and Copilot review (`7921cf9`, `61f0b8b`, `d10f930`); recorded section C and G's F8-01 rows (`86cf05a`); reviewed James's refactor commit on the PR.
@@ -269,18 +270,18 @@ Response: Diagnose before you fix. Observe and reproduce, state the expected beh
 
 ## L. Completion and handover
 
-- [ ] Existing project, earlier tests and stage records preserved.
-- [ ] Passing Stage 7 SHA and safe preparation details recorded.
-- [ ] Both defects reproduced with meaningful failing tests.
-- [ ] Both human hypotheses recorded before Copilot; actual suggestions evaluated with evidence.
-- [ ] Supported causes and minimal repairs explained; focused and full regression results recorded.
-- [ ] One genuine refactor verified under passing before/after tests.
-- [ ] Human PR review, feedback resolution and integrated retest recorded.
-- [ ] Tutorial, three reflections and ten formative responses complete.
-- [ ] Local recovery metadata excluded from submitted source.
-- [ ] Same project and full suite ready for Stage 9 after Stage 8 integration, verification and recording.
+- [x] Existing project, earlier tests and stage records preserved.
+- [x] Passing Stage 7 SHA and safe preparation details recorded.
+- [x] Both defects reproduced with meaningful failing tests.
+- [x] Both human hypotheses recorded before Copilot; actual suggestions evaluated with evidence.
+- [x] Supported causes and minimal repairs explained; focused and full regression results recorded.
+- [x] One genuine refactor verified under passing before/after tests.
+- [x] Human PR review, feedback resolution and integrated retest recorded.
+- [x] Tutorial, three reflections and ten formative responses complete.
+- [x] Local recovery metadata excluded from submitted source.
+- [x] Same project and full suite ready for Stage 9 after Stage 8 integration, verification and recording.
 
 Verified integrated code SHA / result: see I.
-Submitted SHA and evidence-only difference if any: [complete]
-Unresolved issues or incomplete checks / owner / next action: [complete]
-Handover note: [complete]
+Submitted SHA and evidence-only difference if any: the merge commit of the `docs/stage08-record` PR into `main` (shown on that PR). The only difference from the verified integrated code SHA `af2da4a` is this record file; `project/` code and tests are unchanged (16 passed).
+Unresolved issues or incomplete checks / owner / next action: none for Stage 8. Both defects are repaired with retained regression tests, the refactor is verified, and the PR was reviewed and approved by two members. Note for honesty: both section E hypotheses were drafted with Claude's help and then edited by their authors, as disclosed in E and I.
+Handover note: Stage 9 can start from `main` after the record PR merges. Same `project/`, all earlier tests kept: 12 retained + 4 Stage 8 regression tests (TEST-R01 to R04), 16 passed. Cancellation/history (FR-06/07/08) and practitioner conflict (FR-05, AC-04.1/AC-04.2) behaviour are restored. `debug/stage8` is kept for the evidence links. Stage 9 TODOs and its blank record are untouched.
