@@ -204,6 +204,7 @@ def test_console_ui02_recovers_from_invalid_input() -> None:
         '3', 'D1', 'Taylor Example', 'General',
         '5', 'A5', 'P9', 'D1', '2026-10-01 09:00',
         '5', 'A6', 'P1', 'D1', '2026-13-01 09:00',
+        '7', 'A6',
         '7', 'A5',
         '6', 'A7',
         '5', 'A1', 'P1', 'D1', '2026-10-01 09:00',
@@ -214,7 +215,7 @@ def test_console_ui02_recovers_from_invalid_input() -> None:
         '0',
     ])
     assert 'Unknown option; choose 0-8.' in output
-    assert output.count('Error:') >= 9
+    assert output.count('Error:') >= 10
     # The original patient was not overwritten by the duplicate.
     assert 'Found patient P1: Alex Example' in output
     assert 'Goodbye' in output
