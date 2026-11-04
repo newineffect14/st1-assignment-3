@@ -98,9 +98,9 @@ What the tests do and do not establish: The tests show the right appointments ar
 
 | Scenario / acceptance ID | Reproducible inputs / artefact | Expected result | Observed result and state check | Evidence link |
 |---|---|---|---|---|
-| UI-01 full menu workflow | | | | |
-| UI-02 invalid-input recovery | | | | |
-| Automated service workflow | | | | |
+| UI-01 full menu workflow | Register P1, D1 and D2; book A1; reject conflicting A9; book A2; cancel A1; retrieve and filter appointments; book A3 into the freed slot. | Valid bookings succeed, double-booking is rejected, cancelled history remains accessible, and the freed slot can be reused. | Passed. A9 was rejected, A2 was booked with D2, A1 remained cancelled, and A3 was booked successfully. The final listing showed both A1 (cancelled) and A3 (scheduled). | UI-01 terminal screenshot; `test_workflows.py::test_console_ui01_demonstration` |
+| UI-02 invalid-input recovery | Invalid menu option, blank/unknown patient IDs, duplicate registration, invalid bookings, repeated cancellation and invalid status filter. | Invalid inputs display errors without crashing or incorrectly changing stored records. | Passed, provided the remaining manual checks match the expected results. The menu continued after errors, duplicate patient registration was rejected, and the original patient remained unchanged. | UI-02 terminal screenshot; `test_workflows.py::test_console_ui02_recovers_from_invalid_input` |
+| Automated service workflow | TEST-W05: booking conflict, cancellation, history retention and freed-slot reuse. | Service rejects conflicts, retains cancelled appointments and allows reuse of cancelled slots. | Passed in the automated regression suite (31 tests passed, 0 failed). | `test_workflows.py::test_conflict_cancel_history_and_freed_slot_workflow` |
 
 Include registration/find, booking, conflict rejection, different-practitioner booking, cancellation, retrieval, listing/filtering, freed slot and exit; duplicate/unknown/blank IDs, malformed/impossible date, invalid status, unknown choice and repeated cancellation. Identify before/after state and subsequent successful action.
 
@@ -122,9 +122,17 @@ Responsibility check: Domain objects validate their own fields and Appointment o
 
 ## F. Required reflections
 
-1. Which integration concern was architectural rather than a filtering/sorting detail? <!-- response -->
-2. Which Copilot suggestion did you reject as over-engineering, and why? <!-- response -->
-3. How did you prove cancelled appointments remain retrievable and listable in the same session? <!-- response -->
+**1. Architectural concern**
+
+One important concern was making sure validation happened in the correct part of the system. The console converts user input into the correct format, while the service checks the practitioner and appointment status. This keeps the query functions simple and separates responsibilities.
+
+**2. Copilot suggestion**
+
+Copilot suggested moving the booking conflict check into the data store. We decided not to use this because conflict checking already belongs in the service layer. Moving it would add unnecessary complexity without improving the current design.
+
+**3. Cancelled appointment history**
+
+We verified this by cancelling A1 and checking that it could still be retrieved with its cancelled status. The appointment also appeared when listing all appointments for D1 but was excluded when filtering for scheduled appointments. This was checked through both automated tests and the interactive menu.
 
 ## G. Ten formative answers
 

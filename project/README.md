@@ -1,20 +1,76 @@
-# SmartCare Stage 6 starter
+# SmartCare – Stage 9
 
-Requirements baseline: SmartCare A3 2026 revision 2. Python 3.13 and pytest 8.3.5 verified. Runtime uses only the standard library.
+## Requirements
 
-From this directory, using a Python environment with the development dependency installed:
+- Python 3.13 or compatible version
+- pytest 8.3.5
+- Runtime uses the Python standard library
 
-```sh
-python main.py
-python -m pytest
+## Running SmartCare
+
+Open a terminal in the `project` directory.
+
+Run the standard demonstration:
+
+```bash
+python3 main.py
 ```
 
-If needed in your approved environment: `python -m pip install -r requirements-dev.txt`.
+Run the interactive console:
 
-The demo registers synthetic records and books/finds an appointment. All supplied tests pass. Data exists only in this session and is lost on exit; FR-10 restart persistence is retired. Use synthetic information only.
+```bash
+python3 main.py --interactive
+```
 
-`domain.py` contains the entities, status and guarded cancellation. `data_store.py` holds three dictionaries through add/find/list methods. The three services share that object. Supplied registration, booking, appointment lookup and conflict checking work. IDs are trimmed, non-blank and case-sensitive. Properties provide read-only identity/appointment state; changes go through domain methods. No special architecture terminology is required.
+Run the automated tests:
 
-Stage 6 TODOs: service patient/practitioner lookup and cancellation. Stage 9 TODOs: pure query, named sort key, service listing and interactive menu. The starter TODO contracts are in docstrings. All three Stage 6 TODO calls deliberately raise NotImplementedError; future TODOs remain stubs. No PG rescheduling or assurance solution is supplied.
+```bash
+python3 -m pytest -q
+```
 
-Service booking accepts IDs and a `datetime` (local, minute precision). Console parser accepts exactly `YYYY-MM-DD HH:MM`. Store lookups return None when absent; service lookups raise LookupError. Invalid values, duplicates, conflicts and illegal transitions raise ValueError. Lists are new containers holding the stored objects. No age, duration, patient-conflict or past-date rules apply.
+If pytest is missing, install the development dependencies:
+
+```bash
+python3 -m pip install -r requirements-dev.txt
+```
+
+## Interactive menu
+
+The interactive console provides the following options:
+
+0. Exit
+1. Register patient
+2. Find patient
+3. Register practitioner
+4. Find practitioner
+5. Book appointment
+6. Cancel appointment
+7. Find appointment
+8. List practitioner appointments
+
+## Features
+
+SmartCare supports patient and practitioner registration and lookup, appointment booking, cancellation and appointment queries.
+
+The system prevents double-booking for the same practitioner at the same time. Cancelled appointments remain available in the appointment history, and their previous time slots can be booked again.
+
+Appointments can be listed by practitioner and optionally filtered by status.
+
+## Validation
+
+The console checks invalid menu selections, missing records, duplicate IDs, invalid dates, booking conflicts and invalid status filters.
+
+Errors are displayed without closing the interactive session.
+
+## Testing
+
+Stage 9 includes automated workflow tests and manual UI-01 and UI-02 demonstrations.
+
+The automated test suite passed with 31 tests.
+
+## Limitations
+
+- Data is stored in memory and is lost when the application closes.
+- Only synthetic patient information should be used.
+- Appointment rescheduling is not supported.
+- The system does not check patient scheduling conflicts or prevent past-date bookings.
