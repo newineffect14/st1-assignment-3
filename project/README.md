@@ -1,78 +1,106 @@
-# SmartCare – Stage 9
+# SmartCare v1.0 – course release
 
-## Requirements
+SmartCare is a small console application for clinic staff to register patients and practitioners, book and cancel appointments, and list a practitioner's appointments. It is the Software Technology 1 Assignment 3 group project (undergraduate scope, Stages 6, 7, 8, 9 and 12), built against the SmartCare A3 2026 revision 2 requirements.
 
-- Python 3.13 or compatible version
-- pytest 8.3.5
-- Runtime uses the Python standard library
+This is a **course release**. It makes no claim of production, clinical or security readiness. Use synthetic data only.
+
+## Scope
+
+Included (common UG scope):
+
+- Register and find patients and practitioners (FR-01–FR-03)
+- Book an appointment linking one registered patient and one registered practitioner (FR-04)
+- Reject a second SCHEDULED booking for the same practitioner at exactly the same time; a different practitioner at that time is allowed (FR-05)
+- Cancel only SCHEDULED appointments and keep them as CANCELLED history (FR-06, FR-07)
+- Find an appointment by ID (FR-08)
+- List a practitioner's appointments, optionally filtered by status, ordered by date/time then appointment ID (FR-09, QRY-01–QRY-04, FP-01–FP-03)
+- Interactive console menu that recovers from invalid input (UI-01, UI-02)
+
+Out of scope: saving data between runs (FR-10 is retired), rescheduling (PG only), authentication and roles, patient portal, SMS/email notifications, billing, clinical rules, patient double-booking checks, past-date checks, clinic hours and appointment durations.
+
+## Environment
+
+- Python 3.13 is the teaching team's verified baseline. This release was also run on Python 3.14.3 (macOS).
+- pytest 8.3.5 is the only development dependency (`requirements-dev.txt`). The application itself uses only the standard library.
+- On macOS use `python3` if `python` is not found. Activate your virtual environment first.
 
 ## Running SmartCare
 
-Open a terminal in the `project` directory.
+All commands run from this `project/` directory:
 
-Run the standard demonstration:
-
-```bash
-python3 main.py
+```sh
+cd project
+python -m pip install -r requirements-dev.txt
+python main.py
+python main.py --interactive
+python -m pytest -q
+cd ..
 ```
 
-Run the interactive console:
-
-```bash
-python3 main.py --interactive
-```
-
-Run the automated tests:
-
-```bash
-python3 -m pytest -q
-```
-
-If pytest is missing, install the development dependencies:
-
-```bash
-python3 -m pip install -r requirements-dev.txt
-```
+- `python main.py` runs a short synthetic demonstration.
+- `python main.py --interactive` starts the menu.
+- `python -m pytest -q` runs the full suite. Release result: **31 passed**.
 
 ## Interactive menu
 
-The interactive console provides the following options:
-
+```
+1. Register patient          (ID, name)
+2. Find patient              (ID)
+3. Register practitioner     (ID, name, specialty)
+4. Find practitioner         (ID)
+5. Book appointment          (appointment ID, patient ID, practitioner ID, date/time)
+6. Cancel appointment        (appointment ID)
+7. Find appointment          (appointment ID)
+8. List practitioner appointments (practitioner ID, optional status)
 0. Exit
-1. Register patient
-2. Find patient
-3. Register practitioner
-4. Find practitioner
-5. Book appointment
-6. Cancel appointment
-7. Find appointment
-8. List practitioner appointments
+```
 
 Dates use the format `YYYY-MM-DD HH:MM` (for example `2026-10-01 09:00`). For option 8, leave the status blank to list all appointments, or type `scheduled`, `cancelled` or `completed`.
 
-## Features
+Invalid input prints `Error: ...` and the menu continues. A rejected operation leaves stored records unchanged.
 
-SmartCare supports patient and practitioner registration and lookup, appointment booking, cancellation and appointment queries.
+## Structure and responsibilities
 
-The system prevents double-booking for the same practitioner at the same time. Cancelled appointments remain available in the appointment history, and their previous time slots can be booked again.
+```
+project/
+├── main.py                 entry point (demo or --interactive)
+├── requirements-dev.txt    pinned pytest
+├── smartcare/
+│   ├── domain.py           Patient, Practitioner, Appointment, AppointmentStatus
+│   ├── data_store.py       SmartCareDataStore: session collections
+│   ├── services.py         PatientService, PractitionerService, AppointmentService
+│   ├── queries.py          appointment_sort_key, select_appointments (pure)
+│   └── console.py          menu, input parsing and output
+└── tests/
+    ├── test_starter.py     supplied and Stage 6–7 tests
+    ├── test_regressions.py Stage 8 fault regressions
+    ├── test_queries.py     Stage 9 pure query tests
+    └── test_workflows.py   Stage 9 service and console tests
+```
 
-Appointments can be listed by practitioner and optionally filtered by status.
+- **Domain** objects validate their own fields; `Appointment` owns the cancellation rule.
+- **SmartCareDataStore** only holds and finds the current session's records.
+- **Services** coordinate use cases through one shared store: lookups, conflicts, cancellation and validated listing.
+- **Queries** are pure functions with explicit inputs. They filter and sort without changing anything.
+- **Console** reads input, converts text (dates, status), calls services and prints results. It holds no business rules.
 
-## Validation
+## Contracts
 
-The console checks invalid menu selections, missing records, duplicate IDs, invalid dates, booking conflicts and invalid status filters.
+IDs are trimmed, non-blank, case-sensitive strings. Names and specialty are required. Invalid values, duplicate IDs, conflicts and illegal status changes raise `ValueError`. A valid but unknown ID raises `LookupError` from services; the store returns `None`. Lists are new containers holding the stored objects. Times are local, naive and minute-precision.
 
-Errors are displayed without closing the interactive session.
+## Responsible AI use
 
-## Testing
+GitHub Copilot Chat was used for bounded review, test ideas and debugging help. Human design and hypotheses were recorded first in each stage record, and every significant suggestion was checked against code and tests before an Accept/Modify/Reject decision. See `stage08/copilot_f8_01.md`, `stage08/copilot_f8_02.md`, `stage09/copilot_review.md` and each stage record's Copilot section.
 
-Stage 9 includes automated workflow tests and manual UI-01 and UI-02 demonstrations.
+## Known limitations
 
-The automated test suite passed with 31 tests.
+- Data lasts only for the current session and is lost on exit.
+- No rescheduling, authentication, notifications or billing.
+- No patient-conflict, past-date, clinic-hours or duration rules.
+- The conflict rule is enforced by `AppointmentService`; code that adds appointments directly to the store bypasses it.
+- Single user, single process; no concurrency or timezone handling.
+- Not evaluated for accessibility or usability with real clinic staff.
 
-## Limitations
+## Release
 
-- Data is stored in memory and is lost when the application closes.
-- Only synthetic patient information should be used.
-- Appointment rescheduling is not supported.
-- The system does not check patient scheduling conflicts or prevent past-date bookings.
+Label: **SmartCare v1.0 (course release)**. The exact tested and submitted commit SHAs are recorded in `stage12/stage12_activities_and_evidence.md` section K; the label never replaces the SHA.
