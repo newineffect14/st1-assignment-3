@@ -2,52 +2,52 @@
 
 BLANK student response template. Supplied from the beginning in stage12/ in your EXISTING repository; complete it only when you reach Stage 12 after the previous applicable stage is integrated, verified and recorded; preserve project/, tests, earlier records and Git history. UG/common and PG/extended scope must be explicit. Use concise results and versioned links, not copied logs or source. No staff answers or fabricated approvals.
 
-Group/tutorial: [response]
-Members and UG/PG applicability: [response]
+Group/tutorial: Group 5, Thursday 2:30
+Members and UG/PG applicability: James Nguyen, Lemuel Legaspi, Joshua Sisourath – we are all UG
 
 
 ## A Release scope and starting SHA
 
-Release label/version and requirements baseline: [response]
-Common starting SHA / branch / applicable members: [response]
-PG starting SHA / branch / applicable members or not applicable: [response]
-Working-state review and approved integration: [response]
-Protected common candidate and PG differences: [response]
-Feature freeze / owner / verifier: [response]
+Release label/version and requirements baseline: SmartCare v1.0 (course release) – SmartCare A3 2026 revision 2.
+Common starting SHA / branch / applicable members: `c77585a9f684f82d889f775419684835ab6dd309` on `main` (Stage 9 merge `f740044` plus section H record, PR #12). Release branch `release/stage12`. All three members.
+PG starting SHA / branch / applicable members or not applicable: Not applicable – UG-only group.
+Working-state review and approved integration: On `main` at `c77585a`, `git status --short`, `git diff` and `git diff --cached` were all empty, with no untracked or local work and no open PRs to integrate. Only reviewed changes were added on `release/stage12`: README updates (`224c937`, `1430e1b`) and one docstring correction (`78affea`).
+Protected common candidate and PG differences: Protected common Stage 9 SHA `f7400446d2e69f7a379b1bc507b707845fc965a3`. Release candidate `78affeaedcafadda2a5c60df8be1801f259e2276` differs only in README text and one docstring, with no behaviour change. No PG work.
+Feature freeze / owner / verifier: Features frozen at `c77585a`; code frozen at `78affea`. Owner James Nguyen; fresh-copy verifier Lemuel Legaspi; PR reviewer Joshua Sisourath.
 
 
 ## B Requirements and release readiness matrix
 
-Tutorial activity 1: All tests pass, README setup is incomplete, one dependency is unreviewed and a known limitation is undocumented. Decide Release / Release with conditions / Do not release and justify: [response]
+Tutorial activity 1: All tests pass, README setup is incomplete, one dependency is unreviewed and a known limitation is undocumented. Decide Release / Release with conditions / Do not release and justify: Release with conditions. Passing tests show the behaviour works but don't show another person can set it up, that the dependency is safe, or that users know the limits. Before sign-off: complete and fresh-copy-test the README, review the dependency's origin and licence, and document the limitation. If any of these can't be done, do not release.
 
 Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptance IDs, evidence and reviewer; distinguish common/PG applicability.
 
 | Release claim / requirement / scope | Evidence | Location/link and SHA | Reviewer | Sufficient? | Gap/action |
 |---|---|---|---|---|---|
-| Cancellation history works | [response] | [response] | [response] | [response] | [response] |
-| Architecture responsibilities are appropriate | [response] | [response] | [response] | [response] | [response] |
-| Rescheduling is safe — PG only | [response] | [response] | [response] | [response] | [response] |
-| AI use is responsible — common recheck / PG assurance | [response] | [response] | [response] | [response] | [response] |
-| System is maintainable | [response] | [response] | [response] | [response] | [response] |
-| FR-01–03 register/find and validation | [response] | [response] | [response] | [response] | [response] |
-| FR-04–05 booking/conflict rules | [response] | [response] | [response] | [response] | [response] |
-| FR-06–08 cancellation/history/find | [response] | [response] | [response] | [response] | [response] |
-| FR-09 and QRY/FP listing/filter/order/purity | [response] | [response] | [response] | [response] | [response] |
-| UI full console sequence and error recovery | [response] | [response] | [response] | [response] | [response] |
-| Session-only scope / FR-10 retired | [response] | [response] | [response] | [response] | [response] |
-| PG RES and assurance integration | [response] | [response] | [response] | [response] | [response] |
+| Cancellation history works | FR-06, FR-07, AC-05.1–05.3: cancel keeps the same object as CANCELLED; still found and listed; repeat cancel rejected | test_workflows.py::test_conflict_cancel_history_and_freed_slot_workflow; test_starter.py::test_cancel_appointment, test_cancel_appointment_twice – `78affea` | Lemuel Legaspi (PR #11), Joshua Sisourath (release PR) | Yes | None |
+| Architecture responsibilities are appropriate | Code inspection: domain rules, store collections, service coordination, pure queries, console I/O kept separate | project/README.md "Structure and responsibilities"; section E – `78affea` | Joshua Sisourath | Yes, by inspection | Tests can't fully prove architecture; relies on review |
+| Rescheduling is safe — PG only | Not applicable – UG-only group | – | – | – | – |
+| AI use is responsible — common recheck / PG assurance | Copilot prompts, responses and Accept/Modify/Reject decisions recorded with human checks | stage08/copilot_f8_01.md, copilot_f8_02.md, stage09/copilot_review.md, Stage 6–9 records, section E | James Nguyen, Lemuel Legaspi | Yes for Stages 8–9 | Stage 6–7 AI evidence is lighter; disclosed in section E |
+| System is maintainable | Small focused modules, type hints, docstrings, 31 meaningful tests, README with structure | project/smartcare/, project/tests/, project/README.md – `78affea` | Joshua Sisourath | Yes for course scale | Stale docstring found and fixed (section H) |
+| FR-01–03 register/find and validation | AC-01.1, AC-01.2, AC-02.1/02.2; blank-ID and required-field validation | test_starter.py::test_registration_and_booking, test_duplicate_patient_preserves_original, test_required_fields; test_workflows.py::test_console_ui02_recovers_from_invalid_input – `78affea` | Lemuel Legaspi | Yes | None |
+| FR-04–05 booking/conflict rules | AC-03.1, AC-03.2, AC-04.1, AC-04.2 | test_starter.py::test_conflict_rule_and_different_practitioner, test_unregistered_participants_rejected; test_workflows.py TEST-W05 – `78affea` | Lemuel Legaspi | Yes | None |
+| FR-06–08 cancellation/history/find | AC-05.1–05.3, AC-06.1 | test_starter.py cancel tests; test_regressions.py (Stage 8 F8-02); test_workflows.py TEST-W05 – `78affea` | Lemuel Legaspi | Yes | None |
+| FR-09 and QRY/FP listing/filter/order/purity | QRY-01–04, FP-01–03 | test_queries.py TEST-Q01–Q07; test_workflows.py TEST-W01–W04, W06 – `78affea` | Lemuel Legaspi | Yes | Purity also relies on code inspection |
+| UI full console sequence and error recovery | UI-01, UI-02 run through the real menu | test_workflows.py TEST-W07, TEST-W08; section D fresh-copy demo – `78affea` | Lemuel Legaspi | Yes | None |
+| Session-only scope / FR-10 retired | No persistence code; README and exit message state data is lost | project/README.md "Known limitations"; console exit message – `78affea` | Joshua Sisourath | Yes | Deliberate scope limit, not a defect |
+| PG RES and assurance integration | Not applicable – UG-only group | – | – | – | – |
 
 
 ## C Full regression results
 
 | Suite/scope | Environment/version | Working directory and command | Tested SHA | Actual result | Evidence link |
 |---|---|---|---|---|---|
-| Complete common | [response] | [response] | [response] | [response] | [response] |
-| Complete PG if applicable | [response] | [response] | [response] | [response] | [response] |
-| Affected focused checks after correction | [response] | [response] | [response] | [response] | [response] |
-| Full integrated recheck | [response] | [response] | [response] | [response] | [response] |
-Prior assertions preserved / reviewed test diff: [response]
-Remaining failure / limitation: [response]
+| Complete common | James's MacBook Air, macOS, Python 3.14.3, pytest 8.3.5 (venv) | `project/` – `python3 -m pytest -q`; also `python3 main.py` | `c77585a9f684f82d889f775419684835ab6dd309` (starting state) | 31 passed, 0 failed; demo printed A1 with P1 and DR1 and the session-only message | Section A; release branch start |
+| Complete PG if applicable | Not applicable – UG-only group | – | – | – | – |
+| Affected focused checks after correction | Same as above | `project/` – `python3 -m pytest -q` (full suite, since the only code change was a docstring) | `78affeaedcafadda2a5c60df8be1801f259e2276` | 31 passed, 0 failed | Commit `78affea` (section H) |
+| Full integrated recheck | Lemuel's laptop, fresh clone, new venv | `project/` – `python3 -m pytest -q` | `78affeaedcafadda2a5c60df8be1801f259e2276` | PENDING – see section F | Section F |
+Prior assertions preserved / reviewed test diff: No test files changed in Stage 12 (`git diff c77585a 78affea -- project/tests` is empty). All 31 tests from Stages 6–9 are kept unchanged.
+Remaining failure / limitation: None. Python 3.14.3 was used rather than the 3.13 baseline; both are documented in the README.
 
 
 ## D Console and end to end demonstration
@@ -78,22 +78,25 @@ PG demonstrations through service/tests or not applicable: [response]
 
 | Review area | Code/evidence location | Finding or no finding | Correction/no change and recheck |
 |---|---|---|---|
-| OOP responsibilities and pure-query boundaries | [response] | [response] | [response] |
-| PascalCase and snake_case naming | [response] | [response] | [response] |
-| Useful type hints and meaningful docstrings | [response] | [response] | [response] |
-| Four-space indentation and imports/layout | [response] | [response] | [response] |
-| Focused methods / duplication / dead or commented code | [response] | [response] | [response] |
-| Globals / leakage / unnecessary inheritance or frameworks | [response] | [response] | [response] |
-| No SQLite/persistence/repository ABCs/speculative features | [response] | [response] | [response] |
-| Synthetic data / secrets / dependencies / provenance | [response] | [response] | [response] |
-| Significant common Copilot contributions and human verification | [response] | [response] | [response] |
-| PG plan/diff/test approvals and Stage 11 VERIFY/TRUST | [response] | [response] | [response] |
+| OOP responsibilities and pure-query boundaries | domain.py, data_store.py, services.py, queries.py, console.py | No finding. Appointment owns cancel; store only holds and finds records; services coordinate; queries are pure functions with explicit inputs; console only does I/O | No change; 31 passed at `78affea` |
+| PascalCase and snake_case naming | All files in project/smartcare and project/tests | No finding. Classes are PascalCase (SmartCareDataStore, AppointmentService); functions and variables are snake_case | No change |
+| Useful type hints and meaningful docstrings | services.py `find_patient` | Finding: docstring still said "Stage 6 TODO… raises NotImplementedError" although the method was implemented | Docstring corrected in `78affea` (section H); 31 passed |
+| Four-space indentation and imports/layout | All source files | No finding. Four-space indentation; standard library imports first, then project imports | No change |
+| Focused methods / duplication / dead or commented code | console.py `run_menu` | Minor: `run_menu` is long (one branch per menu option) but each branch only calls one service. No dead or commented-out code | Accepted, no change: splitting it now would be a refactor during feature freeze. Logged as technical debt (section G) |
+| Globals / leakage / unnecessary inheritance or frameworks | console.py `MENU` | No finding. Only constant is `MENU: Final[str]`; no mutable globals, no inheritance, no frameworks | No change |
+| No SQLite/persistence/repository ABCs/speculative features | Whole project | No finding. No database, file saving, repository ABC or extra features | No change |
+| Synthetic data / secrets / dependencies / provenance | `git ls-files`, requirements-dev.txt, .gitignore | No finding. Only synthetic names (Alex Example, Taylor Example); no secrets or .env tracked; only dependency is pytest 8.3.5 (PyPI, MIT licence); Stage 8 tool and backups not tracked | No change |
+| Significant common Copilot contributions and human verification | stage08/copilot_f8_01.md, copilot_f8_02.md, stage09/copilot_review.md | No finding. Each significant suggestion has a recorded human check and decision | No change |
+| PG plan/diff/test approvals and Stage 11 VERIFY/TRUST | – | Not applicable – UG-only group | – |
 
 | AI claim | Affected requirement/code | Human check | Accept/Modify/Reject and reason | Actual outcome/action or no change |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Access route or approved equivalent / limitations: [response]
-Available AI evidence and missing evidence honestly disclosed: [response]
+| Stage 9: UI-02 test didn't check the malformed-date booking was not stored | UI-02; test_workflows.py | Read the test and the console booking flow | Accept – a real gap in no-partial-state evidence | Added `'7', 'A6'` lookup (`bf7b2f6`); 31 passed |
+| Stage 9: conflict rule can be bypassed by direct store insertion | FR-05; data_store.py | Checked all booking goes through AppointmentService | Reject – over-engineering; conflict checking belongs in the service | No change; documented as a known limitation in README |
+| Stage 9: pure query doesn't reject invalid status | QRY-04; queries.py | Checked the service validates (TEST-W04) | Reject – handout says the pure helper assumes valid inputs | No change |
+| Stage 9: EOF during a field prompt isn't handled | UI-02; console.py | Confirmed fields are read before any service call | Reject – not reachable by a keyboard user; no partial writes | No change |
+Access route or approved equivalent / limitations: GitHub Copilot Chat in VS Code (Ask mode for reviews) using members' own accounts. No agent mode used (UG).
+Available AI evidence and missing evidence honestly disclosed: Copilot prompts and responses are recorded for Stages 8 and 9; Stage 6–7 decisions are recorded in those stage records. Everything was read, run and checked by the members through tests, code inspection and multiple PR reviews were done before being committed.
 
 
 ## F README and reproducibility check
@@ -116,40 +119,44 @@ Missing local file or setup gap / remedy and recheck: [response]
 
 ## G Known limitations debt and release notes
 
-Delivered features: [response]
-Important fixes: [response]
-Architecture/quality improvements: [response]
-Known limitations: [response]
-AI-assisted development note: [response]
+Delivered features: Register and find patients and practitioners; book appointments with the same-practitioner exact-time conflict rule; cancel with retained CANCELLED history; find appointments; list a practitioner's appointments with optional status filter in date/time then ID order; interactive console menu (options 0–8) that recovers from invalid input.
+Important fixes: Stage 8 repaired two data-store faults (F8-01 conflict check, F8-02 cancelled appointments disappearing from lookup) with regression tests. Stage 12 corrected a stale "TODO / NotImplementedError" docstring in `find_patient`.
+Architecture/quality improvements: Stage 8 behaviour-preserving refactor; Stage 9 pure query functions with a reusable named sort key; validation kept in services and text-to-enum conversion kept in the console; final README with structure and responsibilities.
+Known limitations: Session-only data; no rescheduling, authentication, notifications or billing; no patient-conflict, past-date, clinic-hours or duration rules; the conflict rule is enforced in the service, not the store; single user, single process.
+AI-assisted development note: GitHub Copilot Chat was used for bounded reviews, test ideas and debugging help, and Claude was used as a step-by-step assistant. Human design came first, and every suggestion was checked against code and tests before being accepted, modified or rejected (section E).
 
 | Debt item | Impact | Priority | Future action | Accepted? / release rationale |
 |---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] |
-Session-only synthetic data and minute-precision local time: [response]
-Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: [response]
-Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: [response]
-Difference between accepted scope limit and unresolved required behaviour: [response]
-PG assurance residual risks / owner / status or not applicable: [response]
+| `run_menu` is one long function | Harder to read and extend | Low | Split each menu option into a small helper function | Accepted – each branch only calls a service; refactoring during feature freeze adds risk |
+| Conflict rule only in AppointmentService | Code adding appointments directly to the store could skip the check | Low | Keep all booking going through the service, or add a guard if the store is ever used directly | Accepted – all current callers use the service; documented in README |
+| Mixed quote styles in early service code | Minor inconsistency | Low | Standardise on single quotes | Accepted – cosmetic only |
+| No persistence | Records lost on exit | Out of scope | Only if a future requirement asks for it | Accepted – FR-10 retired |
+Session-only synthetic data and minute-precision local time: Records last only for the running session. Times are local, naive and minute-precision, with no timezone handling. Only synthetic data is used.
+Production auth/roles, portal, notifications, billing/insurance, clinical AI exclusions: None of these are included. Clinic staff are the assumed operator; this is out of scope for the course release.
+Scale/concurrency, timezone policy, operations/monitoring, accessibility/usability limitations: Single user and single process; no concurrency, timezone policy, logging or monitoring; not tested for accessibility or usability with real clinic staff.
+Difference between accepted scope limit and unresolved required behaviour: The items above are deliberate scope limits from the revision 2 requirements. No required behaviour (FR-01–FR-09, QRY, FP, UI) is unmet.
+PG assurance residual risks / owner / status or not applicable: Not applicable – UG-only group.
 
 
 ## H Release findings and corrective action
 
 | Requirement/claim | Reproduction/observation | Impact/severity | Owner/action | Corrective diff | Focused/full recheck | Residual limit |
 |---|---|---|---|---|---|---|
-| [response] | [response] | [response] | [response] | [response] | [response] | [response] |
-Justified no-change conclusion if no defect found: [response]
-Release blockers still open / status: [response]
+| Maintainability / meaningful docstrings | `services.py` `find_patient` docstring said "Stage 6 TODO… The starter deliberately raises NotImplementedError", but the method returns the patient or raises LookupError | Low – misleading documentation, no behaviour impact | James Nguyen – correct the docstring | `78affea` (docstring only, 3 insertions, 4 deletions) | Full suite: 31 passed at `78affea` | None |
+| README reflected Stage 9, not the release | `project/README.md` titled "SmartCare – Stage 9", no structure, AI summary or release label; root README group index blank | Medium – reproducibility and evidence gap | James Nguyen – write final README and group index | `224c937`, `1430e1b` | Fresh-copy check by Lemuel (section F) | None |
+Justified no-change conclusion if no defect found: No behaviour defects found. The full suite, the menu demo and the code inspection in section E found nothing violating FR-01–FR-09, QRY, FP or UI requirements.
+Release blockers still open / status: None.
 
 
 ## I Git review and integration evidence
 
-Issue / PR / diff links and reviewed SHA: [response]
-Independent reviewer / feedback / response: [response]
-Integration commit / full recheck: [response]
-Tracked and untracked file inspection / cleanliness: [response]
-Secrets/staff material/caches/tool-metadata exclusion check: [response]
-Candidate recovery plan / known-good SHA: [response]
-Named substantive contributions: [response]
+Issue / PR / diff links and reviewed SHA: Release branch `release/stage12`; release PR: TO FILL (link) – reviewed SHA `78affeaedcafadda2a5c60df8be1801f259e2276` plus evidence-only record commits.
+Independent reviewer / feedback / response: Joshua Sisourath reviews the release PR: TO FILL (feedback and response). Fresh-copy verifier: Lemuel Legaspi (section F).
+Integration commit / full recheck: TO FILL – merge commit on `main` after the release PR; full suite rerun after merge.
+Tracked and untracked file inspection / cleanliness: `git ls-files` lists only README.md, .gitignore, project/ source and tests, and stage records. `git status --short` was empty. .gitignore excludes .venv, caches, .env and Stage 8 tool folders.
+Secrets/staff material/caches/tool-metadata exclusion check: No secrets, .env, real patient data, staff solutions, peer forms, caches, Stage 8 utility or backups are tracked.
+Candidate recovery plan / known-good SHA: Known-good tested SHA `78affeaedcafadda2a5c60df8be1801f259e2276`; protected Stage 9 SHA `f7400446d2e69f7a379b1bc507b707845fc965a3`. Either can be restored with `git checkout <SHA>` or a reviewed revert commit. History is never rewritten.
+Named substantive contributions: James Nguyen – Stage 9 queries, service listing, console menu and tests; Stage 12 release branch, README and record. Lemuel Legaspi – Stage 8 debugging and refactoring; Stage 9 review (PR #11), sections G and H; Stage 12 fresh-copy verification and demo. Joshua Sisourath – Stages 6–7 implementation and testing; Stage 9 README and sections D/F; Stage 12 release PR review.
 
 
 ## J Human release decision
@@ -164,12 +171,12 @@ Common decision / PG decision where different: [response]
 
 ## K Final tested release SHA
 
-Exact common tested SHA: [response]
-Exact PG tested SHA or not applicable: [response]
-Final submitted SHA / repository URL: [response]
-Evidence-only later commit and difference explanation: [response]
-Executable changes after testing and re-verification: [response]
-Source ZIP name / SHA correspondence / extracted comparison: [response]
+Exact common tested SHA: `78affeaedcafadda2a5c60df8be1801f259e2276` (31 passed; fresh-copy verified by Lemuel, section F).
+Exact PG tested SHA or not applicable: Not applicable – UG-only group.
+Final submitted SHA / repository URL: TO FILL (merge commit on `main`) – https://github.com/newineffect14/st1-assignment-3
+Evidence-only later commit and difference explanation: Commits after `78affea` only change `stage12/stage12_activities_and_evidence.md` (release evidence). No executable code or tests changed.
+Executable changes after testing and re-verification: None after `78affea`. The full suite is rerun on the final submitted SHA anyway.
+Source ZIP name / SHA correspondence / extracted comparison: TO FILL – `SmartCare-release.zip` from `git archive` of the final submitted SHA, extracted and checked.
 
 
 ## L Submission package verification
