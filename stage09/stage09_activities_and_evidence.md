@@ -149,22 +149,22 @@ We verified this by cancelling A1 and checking that it could still be retrieved 
 
 ## H. Review, completion and common handover
 
-Issues and bounded branches: <!-- links -->
-PR/diff and another-member human reviewer: <!-- actual links/name -->
-Review responses and Copilot comparison: <!-- links -->
-Integrated common Stage 9 SHA: <!-- complete -->
-Full regression command, working directory, actual count/result and evidence: <!-- complete -->
-README run instructions and scope/limitations: <!-- link -->
-Unresolved issues and support/action: <!-- complete -->
-UG common candidate / PG future branch plan: <!-- complete -->
+Issues and bounded branches: All Stage 9 work was done on `feature/stage9-queries` (one bounded branch). Section A/B commit `c1757ee` was pushed to `main` by mistake and then brought into the branch; no history was rewritten.
+PR/diff and another-member human reviewer: [PR #11](https://github.com/newineffect14/st1-assignment-3/pull/11), reviewed by Lemuel Legaspi (other-member human reviewer).
+Review responses and Copilot comparison: In the [PR #11 review](https://github.com/newineffect14/st1-assignment-3/pull/11), Lemuel requested 3 documentation fixes (UI-02 hedged wording, missing screenshot links, README date/status format). All 3 were fixed in `b3d6cba`, then approved. Copilot found no code problems but raised 4 optional findings; we accepted 1 of them (see section E and [copilot_review.md](copilot_review.md)). The human review found documentation gaps that Copilot did not.
+Integrated common Stage 9 SHA: `f7400446d2e69f7a379b1bc507b707845fc965a3` (merge of PR #11 into `main`).
+Full regression command, working directory, actual count/result and evidence: `python -m pytest -q` run in `project/` on `main` after the merge: 31 passed, 0 failed (16 earlier-stage tests + 7 query tests + 8 workflow/console tests).
+README run instructions and scope/limitations: [project/README.md](../project/README.md)
+Unresolved issues and support/action: None known.
+UG common candidate / PG future branch plan: UG group. `f7400446d2e69f7a379b1bc507b707845fc965a3` is the protected common candidate for Stage 12. PG Stages 10/11: not applicable.
 
-- [ ] Query contracts, purity, new lists and named-key ordering verified.
-- [ ] Service empty/unknown/invalid cases and cancellation history verified.
-- [ ] Every console command and invalid-input recovery demonstrated.
-- [ ] Query and workflow tests plus all previous tests pass; actual evidence linked.
-- [ ] Human design, Copilot critique, review and integration recorded honestly.
-- [ ] Reflections and ten formative responses completed.
-- [ ] README updated; earlier code/tests/records preserved.
-- [ ] Common SHA protected for UG Stage 12; PG Stage 10/11 work deferred until approved.
+- [x] Query contracts, purity, new lists and named-key ordering verified.
+- [x] Service empty/unknown/invalid cases and cancellation history verified.
+- [x] Every console command and invalid-input recovery demonstrated.
+- [x] Query and workflow tests plus all previous tests pass; actual evidence linked.
+- [x] Human design, Copilot critique, review and integration recorded honestly.
+- [x] Reflections and ten formative responses completed.
+- [x] README updated; earlier code/tests/records preserved.
+- [x] Common SHA protected for UG Stage 12; PG Stage 10/11 work deferred until approved.
 
 No persistence, rescheduling or assurance implementation is part of Stage 9. UG: 6→7→8→9→12. PG: 6→7→8→9→10→11→12. Mixed groups keep one repository and protect the common candidate.
