@@ -136,16 +136,16 @@ We verified this by cancelling A1 and checking that it could still be retrieved 
 
 ## G. Ten formative answers
 
-1. What makes select_appointments pure, and what side effect breaks purity? <!-- response -->
-2. Which explicit inputs are needed, and why avoid a global store? <!-- response -->
-3. How can a new list reuse Appointment objects safely? <!-- response -->
-4. Why use a named key, and what breaks equal-time ties? <!-- response -->
-5. How do default and explicit status filters differ? <!-- response -->
-6. How do empty, unknown practitioner and invalid filter cases differ? <!-- response -->
-7. Which console errors recover, and how is unchanged state checked? <!-- response -->
-8. What is data integrity for registered participants, conflicts and history? <!-- response -->
-9. What is Copilot's review role, and who verifies findings? <!-- response -->
-10. How do pure functions and OOP responsibilities work together? <!-- response -->
+1. What makes select_appointments pure, and what side effect breaks purity? It only uses the arguments passed in, builds a new local list and returns a sorted copy, with no printing, input, store access or changes to the original list. Calling appointments.sort() on the input, printing results or reading a global store would make it impure.
+2. Which explicit inputs are needed, and why avoid a global store? It needs the appointment list, the practitioner ID and an optional status filter. If it read a hidden global store instead, the result would depend on outside state, so the same call could give different answers and would be harder to test.
+3. How can a new list reuse Appointment objects safely? The function returns a new list container, but it holds the same Appointment objects instead of copies. This is safe because the query only reads them and never changes them, which TEST-Q06 and TEST-Q07 check.
+4. Why use a named key, and what breaks equal-time ties? appointment_sort_key returns (date_time, appointment_id), so the sort rule lives in one place that can be reused and tested directly (TEST-Q01). When two appointments are at the same time, the appointment ID decides the order, so results are always consistent (TEST-Q05).
+5. How do default and explicit status filters differ? With the default of None, every status is returned, including cancelled and completed appointments. Passing a specific AppointmentStatus returns only that status, and if nothing matches the result is an empty list (TEST-Q03, TEST-Q04).
+6. How do empty, unknown practitioner and invalid filter cases differ? A known practitioner with no matching appointments gives an empty list, which is a normal result (TEST-W01). An unknown but valid ID raises LookupError (TEST-W02), while a blank ID or a text status like 'scheduled' raises ValueError (TEST-W03, TEST-W04).
+7. Which console errors recover, and how is unchanged state checked? The menu catches ValueError and LookupError, prints "Error: ..." and keeps running, covering unknown options, blank or unknown IDs, duplicates, bad dates, invalid statuses and cancelling twice. TEST-W08 then looks the records up afterwards to confirm A5 and A6 were never stored and P1 was not overwritten.
+8. What is data integrity for registered participants, conflicts and history? Appointments link to the actual registered Patient and Practitioner objects, not loose IDs or copies. A practitioner can't be double-booked at the same time, and cancelled appointments stay stored with status CANCELLED so the history isn't lost.
+9. What is Copilot's review role, and who verifies findings? Copilot acted as a reviewer, and we treated its suggestions as ideas to check, not as facts. Our group checked each finding against the code and tests and decided what to do, and we accepted 1 of the 4 findings (section E and stage09/copilot_review.md).
+10. How do pure functions and OOP responsibilities work together? The objects keep their own rules (for example, Appointment handles cancelling), the services coordinate the workflow, the pure query only filters and sorts, and the console only handles input and output. This means the menu never decides business rules, so each part is easier to test on its own.
 
 ## H. Review, completion and common handover
 
