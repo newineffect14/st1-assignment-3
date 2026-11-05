@@ -22,11 +22,21 @@ Out of scope: saving data between runs (FR-10 is retired), rescheduling (PG only
 
 - Python 3.13 is the teaching team's verified baseline. This release was also run on Python 3.14.3 (macOS).
 - pytest 8.3.5 is the only development dependency (`requirements-dev.txt`). The application itself uses only the standard library.
-- On macOS use `python3` if `python` is not found. Activate your virtual environment first.
+- On macOS use `python3` if `python` is not found.
+
+Create and activate a virtual environment from the repository root before installing:
+
+```sh
+python -m venv .venv
+source .venv/bin/activate        # macOS/Linux
+.venv\Scripts\Activate.ps1       # Windows PowerShell
+```
+
+If Windows says "running scripts is disabled on this system", run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first. It only applies to that PowerShell window.
 
 ## Running SmartCare
 
-All commands run from this `project/` directory:
+From the repository root (the block enters `project/` and returns at the end):
 
 ```sh
 cd project
@@ -55,7 +65,7 @@ cd ..
 0. Exit
 ```
 
-Dates use the format `YYYY-MM-DD HH:MM` (for example `2026-10-01 09:00`). For option 8, leave the status blank to list all appointments, or type `scheduled`, `cancelled` or `completed`.
+Dates use the format `YYYY-MM-DD HH:MM` (for example `2026-10-01 09:00`). For option 8, leave the status blank to list all appointments, or type `scheduled`, `cancelled` or `completed`. Status input is not case-sensitive.
 
 Invalid input prints `Error: ...` and the menu continues. A rejected operation leaves stored records unchanged.
 
