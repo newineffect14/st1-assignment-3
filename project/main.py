@@ -7,19 +7,14 @@ from smartcare.console import run_demo, run_menu
 
 
 def main() -> None:
-    """Run the demo, or report the intentionally incomplete interactive
-    menu.
-    """
+    """Run the demo, or the interactive menu with --interactive."""
     parser = argparse.ArgumentParser(
         description='SmartCare teaching application',
     )
     parser.add_argument('--interactive', action='store_true')
     args = parser.parse_args()
     if args.interactive:
-        try:
-            run_menu()
-        except NotImplementedError as error:
-            print(error)
+        run_menu()
     else:
         run_demo()
 if __name__ == '__main__':
