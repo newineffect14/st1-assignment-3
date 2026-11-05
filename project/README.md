@@ -48,6 +48,8 @@ The interactive console provides the following options:
 7. Find appointment
 8. List practitioner appointments
 
+Dates use the format `YYYY-MM-DD HH:MM` (for example `2026-10-01 09:00`). For option 8, leave the status blank to list all appointments, or type `scheduled`, `cancelled` or `completed`.
+
 ## Features
 
 SmartCare supports patient and practitioner registration and lookup, appointment booking, cancellation and appointment queries.
