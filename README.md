@@ -5,15 +5,13 @@ Baseline: Stage 6 foundation, 2026 revision 2. This starter deliberately leaves 
 
 ## Group index
 
-- Group and tutorial: [complete]
-- Member names, GitHub usernames and UG/PG cohorts: [complete]
-- Shared repository URL: [complete]
-- Latest completed stage: [complete]
-- Verified code SHA: [complete]
-- Test command, working directory and observed result: [complete]
-- Final submitted SHA, if different from tested code SHA: [complete; explain evidence-only changes]
-
-Do not put student IDs, private peer ratings, credentials or personal contact details here.
+- Group and tutorial: Group 5, Thursday 2:30
+- Member names, GitHub usernames and UG/PG cohorts: James Nguyen (`newineffect14`), Lemuel Legaspi (`suprlemonaki`), Joshua Sisourath (`Joshua-Sisourath`) – we are all UG
+- Shared repository URL: https://github.com/newineffect14/st1-assignment-3
+- Latest completed stage: Stage 12 (UG final release)
+- Verified code SHA: see [Stage 12 record section K](stage12/stage12_activities_and_evidence.md)
+- Test command, working directory and observed result: `python -m pytest -q` in `project/` – 31 passed
+- Final submitted SHA, if different from tested code SHA: see [Stage 12 record section K](stage12/stage12_activities_and_evidence.md) (later commits are evidence-only)
 
 ## Complete package and stage sequence
 
