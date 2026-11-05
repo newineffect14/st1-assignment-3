@@ -45,7 +45,7 @@ Tutorial activity 2 and actual readiness matrix. Add exact requirement/acceptanc
 | Complete common | James's MacBook Air, macOS, Python 3.14.3, pytest 8.3.5 (venv) | `project/` – `python3 -m pytest -q`; also `python3 main.py` | `c77585a9f684f82d889f775419684835ab6dd309` (starting state) | 31 passed, 0 failed; demo printed A1 with P1 and DR1 and the session-only message | Section A; release branch start |
 | Complete PG if applicable | Not applicable – UG-only group | – | – | – | – |
 | Affected focused checks after correction | Same as above | `project/` – `python3 -m pytest -q` (full suite, since the only code change was a docstring) | `78affeaedcafadda2a5c60df8be1801f259e2276` | 31 passed, 0 failed | Commit `78affea` (section H) |
-| Full integrated recheck | Lemuel's laptop, fresh clone, new venv | `project/` – `python3 -m pytest -q` | `78affeaedcafadda2a5c60df8be1801f259e2276` | PENDING – see section F | Section F |
+| Full integrated recheck | Lemuel's Windows laptop, PowerShell, Python 3.13.17, pytest 8.3.5; fresh clone and new venv | `project/` – `python -m pytest -q` | `78affeaedcafadda2a5c60df8be1801f259e2276` | 31 passed in 0.32s, 0 failed | [08_pytest_31_passed.png](evidence/08_pytest_31_passed.png), [fresh_copy_results.md](evidence/fresh_copy_results.md) |
 Prior assertions preserved / reviewed test diff: No test files changed in Stage 12 (`git diff c77585a 78affea -- project/tests` is empty). All 31 tests from Stages 6–9 are kept unchanged.
 Remaining failure / limitation: None. Python 3.14.3 was used rather than the 3.13 baseline; both are documented in the README.
 
@@ -54,24 +54,24 @@ Remaining failure / limitation: None. Python 3.14.3 was used rather than the 3.1
 
 | Demo step | Synthetic setup/input | Expected requirement | Observed result | Evidence/link |
 |---|---|---|---|---|
-| Problem and stakeholders | [response] | [response] | [response] | [response] |
-| Register and find Patient and two Practitioners | [response] | [response] | [response] | [response] |
-| Valid booking | [response] | [response] | [response] | [response] |
-| Same practitioner exact-time conflict rejected | [response] | [response] | [response] | [response] |
-| Different practitioner same time allowed | [response] | [response] | [response] | [response] |
-| Cancel SCHEDULED and retain/find CANCELLED object | [response] | [response] | [response] | [response] |
-| Invalid/repeated cancellation rejected | [response] | [response] | [response] | [response] |
-| Default all-status listing | [response] | [response] | [response] | [response] |
-| Explicit filtering / empty vs unknown / deterministic order | [response] | [response] | [response] | [response] |
-| Invalid date/status/menu/lookup recovery and continued operation | [response] | [response] | [response] | [response] |
-| Session-only limitation and normal exit | [response] | [response] | [response] | [response] |
-| One meaningful requirement-linked pytest test explained | [response] | [response] | [response] | [response] |
-| Architecture and one actual AI decision / known limitation | [response] | [response] | [response] | [response] |
-| PG reschedule identity/participants/time and no-op | [response] | [response] | [response] | [response] |
-| PG conflict/invalid status/failure non-mutation | [response] | [response] | [response] | [response] |
-| PG old slot / current lookup/list ordering / assurance risks | [response] | [response] | [response] | [response] |
-Stable demo owner / fresh process / command: [response]
-PG demonstrations through service/tests or not applicable: [response]
+| Problem and stakeholders | Clinic staff (the operator) register patients and practitioners, then book, cancel and list appointments. Stakeholders: reception staff, practitioners, patients, clinic manager | Course-scale scheduling with conflict rule and retained history | Explained before the demo; matches README purpose | [project/README.md](../project/README.md) |
+| Register and find Patient and two Practitioners | Rows 1–5: P1 Alex Example; D1 Taylor Example; D2 Morgan Example; find P1 and D1 | FR-01–FR-03, AC-01.1, AC-02.1 | Registered and found as expected | [09](evidence/09_menu_part1a_rows1-2.png), [10](evidence/10_menu_part1b_rows2-4.png), [11](evidence/11_menu_part1c_rows5-7.png) |
+| Valid booking | Row 6: A1, P1, D1, 2026-10-01 09:00 | FR-04, AC-03.1 | Booked A1 … scheduled | [11](evidence/11_menu_part1c_rows5-7.png) |
+| Same practitioner exact-time conflict rejected | Row 7: A9, P1, D1, same time; row 9: find A9 | FR-05, AC-04.1, NFR-01 | "Error: Practitioner already has a SCHEDULED appointment at this time"; A9 then "not found", so no partial appointment | [11](evidence/11_menu_part1c_rows5-7.png), [12](evidence/12_menu_part1d_rows8-9.png) |
+| Different practitioner same time allowed | Row 8: A2, P1, D2, same time | AC-04.2 | Booked A2 with D2 | [12](evidence/12_menu_part1d_rows8-9.png) |
+| Cancel SCHEDULED and retain/find CANCELLED object | Row 10: cancel A1; row 12: find A1 | FR-06, FR-07, AC-05.1, AC-05.2 | A1 cancelled and still found as cancelled. Same object identity is asserted in TEST-W05 | [13](evidence/13_row10_cancel_A1.png), [15](evidence/15_row12_find_A1_cancelled.png) |
+| Invalid/repeated cancellation rejected | Row 11: cancel A1 again | AC-05.3, BR-06 | "Error: Only SCHEDULED appointments may be cancelled"; menu continued | [14](evidence/14_row11_cancel_A1_again_error.png) |
+| Default all-status listing | Row 13: list D1, blank status | QRY-02 | Listed A1 (cancelled) | [16](evidence/16_row13_list_D1_all.png) |
+| Explicit filtering / empty vs unknown / deterministic order | Row 14: D1 `Scheduled`; row 15: D9; row 20: D1 blank after rebooking | QRY-02–QRY-04 | "No matching appointments." vs "Error: Practitioner not found"; final list A1 then A3. Equal-time ID tie-break shown by TEST-Q05 | [17](evidence/17_row14_list_D1_scheduled.png), [18](evidence/18_row15_list_D9_unknown_error.png), [23](evidence/23_row20_list_D1_ordered.png) |
+| Invalid date/status/menu/lookup recovery and continued operation | Row 16: status `bogus`; row 17: date 2026-13-01; row 18: option 9; row 19: book A3 | UI-02, NFR-04 | Each printed an error and the menu continued; A3 then booked into the freed slot | [19](evidence/19_row16_invalid_status_error.png), [20](evidence/20_row17_impossible_date_error.png), [21](evidence/21_row18_unknown_option.png), [22](evidence/22_row19_rebook_A3.png) |
+| Session-only limitation and normal exit | Row 21: option 0 | FR-10 retired, UI-01 | "Goodbye. Session-only data: records are lost on exit." | [24](evidence/24_row21_exit.png) |
+| One meaningful requirement-linked pytest test explained | `test_workflows.py::test_conflict_cancel_history_and_freed_slot_workflow` | FR-05, FR-07, AC-05.2 | Rejects the conflict without changing state, cancels A1, asserts `find_appointment('A1') is` the same object with CANCELLED, still listed by default, excluded from SCHEDULED, and the slot can be rebooked. It doesn't prove behaviour for every possible input | 31 passed ([08](evidence/08_pytest_31_passed.png)) |
+| Architecture and one actual AI decision / known limitation | Domain / store / services / pure queries / console | NFR-02, NFR-03 | Copilot suggested moving the conflict check into the store; rejected as over-engineering because conflict coordination belongs in the service. Known limitation: session-only data | Section E; [stage09/copilot_review.md](../stage09/copilot_review.md) |
+| PG reschedule identity/participants/time and no-op | Not applicable – UG-only group | – | – | – |
+| PG conflict/invalid status/failure non-mutation | Not applicable – UG-only group | – | – | – |
+| PG old slot / current lookup/list ordering / assurance risks | Not applicable – UG-only group | – | – | – |
+Stable demo owner / fresh process / command: Lemuel Legaspi, new process from the fresh clone at `78affea` on Windows (Python 3.13.17): `python main.py --interactive`. All 21 rows matched; full table in [fresh_copy_results.md](evidence/fresh_copy_results.md).
+PG demonstrations through service/tests or not applicable: Not applicable – UG-only group.
 
 
 ## E Final code quality and AI review
@@ -103,18 +103,18 @@ Available AI evidence and missing evidence honestly disclosed: Copilot prompts a
 
 | README item | Location | Verifier | Result/gap |
 |---|---|---|---|
-| Purpose and included common/PG scope | [response] | [response] | [response] |
-| Out-of-scope capabilities and known limitations | [response] | [response] | [response] |
-| Confirmed teaching Python version and dependency installation | [response] | [response] | [response] |
-| Working directory / demo / interactive / test commands | [response] | [response] | [response] |
-| Repository structure and architecture responsibilities | [response] | [response] | [response] |
-| Responsible AI summary / synthetic-data rule | [response] | [response] | [response] |
-| Release label/version and SHA links | [response] | [response] | [response] |
-Root README index and project/README verified: [response]
-Fresh clone or extracted ZIP / candidate identity: [response]
-Verifier and clean environment / actual version: [response]
-Setup/run/test commands and observed results: [response]
-Missing local file or setup gap / remedy and recheck: [response]
+| Purpose and included common/PG scope | project/README.md – title, intro, "Scope" | Lemuel Legaspi | Present and clear; UG common scope only |
+| Out-of-scope capabilities and known limitations | project/README.md – "Scope", "Known limitations" | Lemuel Legaspi | Present |
+| Confirmed teaching Python version and dependency installation | project/README.md – "Environment", "Running SmartCare" | Lemuel Legaspi | Gap: no commands to create/activate a venv, and Windows blocked `Activate.ps1`. Fixed in `b6cc15a` |
+| Working directory / demo / interactive / test commands | project/README.md – "Running SmartCare" | Lemuel Legaspi | All commands worked. Gap: said "run from `project/`" but the block starts with `cd project`. Fixed in `b6cc15a` |
+| Repository structure and architecture responsibilities | project/README.md – "Structure and responsibilities" | Lemuel Legaspi | Present |
+| Responsible AI summary / synthetic-data rule | project/README.md – "Responsible AI use", intro | Lemuel Legaspi | Present |
+| Release label/version and SHA links | project/README.md – "Release"; root README group index | Lemuel Legaspi | Present; exact SHAs in section K |
+Root README index and project/README verified: Root README group index completed in `224c937`. project/README.md followed by Lemuel at `78affea`; the three gaps he found were fixed in `b6cc15a` (README only).
+Fresh clone or extracted ZIP / candidate identity: Fresh `git clone` into a new folder (`Desktop\smartcare-fresh`), then `git checkout 78affeaedcafadda2a5c60df8be1801f259e2276`; `git rev-parse HEAD` confirmed ([01](evidence/01_fresh_clone_rev_parse_HEAD.png)).
+Verifier and clean environment / actual version: Lemuel Legaspi (not the release author), Windows PowerShell, brand new venv, Python 3.13.17 (course baseline), pytest 8.3.5.
+Setup/run/test commands and observed results: `python -m venv .venv` created ([02](evidence/02_create_venv.png)); `.venv\Scripts\Activate.ps1` blocked by execution policy, then worked with a process-only bypass ([03](evidence/03_activate_blocked_execution_policy.png), [04](evidence/04_venv_activated.png)); `pip install -r requirements-dev.txt` installed pytest 8.3.5 ([06](evidence/06_pip_install.png)); `python main.py` matched ([07](evidence/07_demo_main.png)); `python -m pytest -q` 31 passed in 0.32s ([08](evidence/08_pytest_31_passed.png)). Full results: [fresh_copy_results.md](evidence/fresh_copy_results.md).
+Missing local file or setup gap / remedy and recheck: No missing files: everything needed was in the clone. Setup gaps: (1) no venv commands, (2) Windows execution-policy block, (3) misleading working-directory wording. Remedy: README updated in `b6cc15a` with venv commands for macOS/Windows, the process-only execution-policy note, and "From the repository root". No code changed, so the 31-test result still applies. Joshua re-checks the updated README in the release PR review.
 
 
 ## G Known limitations debt and release notes
@@ -144,6 +144,7 @@ PG assurance residual risks / owner / status or not applicable: Not applicable �
 |---|---|---|---|---|---|---|
 | Maintainability / meaningful docstrings | `services.py` `find_patient` docstring said "Stage 6 TODO… The starter deliberately raises NotImplementedError", but the method returns the patient or raises LookupError | Low – misleading documentation, no behaviour impact | James Nguyen – correct the docstring | `78affea` (docstring only, 3 insertions, 4 deletions) | Full suite: 31 passed at `78affea` | None |
 | README reflected Stage 9, not the release | `project/README.md` titled "SmartCare – Stage 9", no structure, AI summary or release label; root README group index blank | Medium – reproducibility and evidence gap | James Nguyen – write final README and group index | `224c937`, `1430e1b` | Fresh-copy check by Lemuel (section F) | None |
+| Reproducibility (README) | Lemuel's fresh-copy check on Windows: README gave no venv commands, `Activate.ps1` was blocked by execution policy, and the working-directory wording was misleading | Medium – a new user could get stuck at setup | James Nguyen – update README | `b6cc15a` (README only) | No code change; Joshua re-checks in release PR review | None |
 Justified no-change conclusion if no defect found: No behaviour defects found. The full suite, the menu demo and the code inspection in section E found nothing violating FR-01–FR-09, QRY, FP or UI requirements.
 Release blockers still open / status: None.
 
