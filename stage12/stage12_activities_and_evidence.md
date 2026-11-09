@@ -151,9 +151,8 @@ Release blockers still open / status: None.
 
 ## I Git review and integration evidence
 
-Issue / PR / diff links and reviewed SHA: Release branch `release/stage12`; release PR: TO FILL (link) – reviewed SHA `78affeaedcafadda2a5c60df8be1801f259e2276` plus evidence-only record commits.
-Independent reviewer / feedback / response: Joshua Sisourath reviews the release PR: TO FILL (feedback and response). Fresh-copy verifier: Lemuel Legaspi (section F).
-Integration commit / full recheck: TO FILL – merge commit on `main` after the release PR; full suite rerun after merge.
+Issue / PR / diff links and reviewed SHA: Release branch `release/stage12`; release PR [#14](https://github.com/newineffect14/st1-assignment-3/pull/14), reviewed at `f10ded6` (code identical to release candidate `78affeaedcafadda2a5c60df8be1801f259e2276`).
+Independent reviewer / feedback / response: Joshua Sisourath approved PR #14 after checking no code changed since `78affea`, the README covers Lem's 3 findings, the record matches the evidence, there's no junk, and 31 passed on his Mac. His one non-blocking note (section K wording understated the later non-code changes) was fixed in the next commit.
 Tracked and untracked file inspection / cleanliness: `git ls-files` lists only README.md, .gitignore, project/ source and tests, and stage records. `git status --short` was empty. .gitignore excludes .venv, caches, .env and Stage 8 tool folders.
 Secrets/staff material/caches/tool-metadata exclusion check: No secrets, .env, real patient data, staff solutions, peer forms, caches, Stage 8 utility or backups are tracked.
 Candidate recovery plan / known-good SHA: Known-good tested SHA `78affeaedcafadda2a5c60df8be1801f259e2276`; protected Stage 9 SHA `f7400446d2e69f7a379b1bc507b707845fc965a3`. Either can be restored with `git checkout <SHA>` or a reviewed revert commit. History is never rewritten.
@@ -175,7 +174,7 @@ Common decision / PG decision where different: [response]
 Exact common tested SHA: `78affeaedcafadda2a5c60df8be1801f259e2276` (31 passed; fresh-copy verified by Lemuel, section F).
 Exact PG tested SHA or not applicable: Not applicable – UG-only group.
 Final submitted SHA / repository URL: TO FILL (merge commit on `main`) – https://github.com/newineffect14/st1-assignment-3
-Evidence-only later commit and difference explanation: Commits after `78affea` only change `stage12/stage12_activities_and_evidence.md` (release evidence). No executable code or tests changed.
+Evidence-only later commit and difference explanation: Commits after `78affea` change only non-executable files: project/README.md (`b6cc15a`, fresh-copy setup fixes), stage12/evidence/ (`fea44b3`), stage09 record and screenshots (`1d3f880`), and the Stage 12 record. No code, tests or main.py changed (`git diff 78affea -- project/smartcare project/tests project/main.py` is empty, confirmed by Joshua in PR #14).
 Executable changes after testing and re-verification: None after `78affea`. The full suite is rerun on the final submitted SHA anyway.
 Source ZIP name / SHA correspondence / extracted comparison: TO FILL – `SmartCare-release.zip` from `git archive` of the final submitted SHA, extracted and checked.
 
