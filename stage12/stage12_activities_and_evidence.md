@@ -161,12 +161,12 @@ Named substantive contributions: James Nguyen – Stage 9 queries, service listi
 
 ## J Human release decision
 
-Decision — READY FOR COURSE RELEASE / READY WITH DOCUMENTED LIMITATIONS / NOT YET READY: [response]
-Approver / date / rationale and evidence: [response]
-What risks remain / conditions / owners: [response]
-Can the team explain the system: [response]
-Can a change be recovered: [response]
-Common decision / PG decision where different: [response]
+Decision — READY FOR COURSE RELEASE / READY WITH DOCUMENTED LIMITATIONS / NOT YET READY: READY WITH DOCUMENTED LIMITATIONS
+Approver / date / rationale and evidence: James Nguyen, Lemuel Legaspi and Joshua Sisourath, 9 November 2026 – proposed and agreed in the [PR #14](https://github.com/newineffect14/st1-assignment-3/pull/14) comments. All scoped requirements (FR-01–FR-09, QRY, FP, UI) are met: 31 passed on James's Mac (section C), Lemuel's fresh Windows clone (section F) and Joshua's Mac (PR #14 review); all 21 demo steps matched (section D); three release findings were fixed (section H); no code or test changes after `78affea`.
+What risks remain / conditions / owners: Session-only data, no rescheduling or authentication, conflict rule enforced only by AppointmentService, and a long `run_menu` function. All are accepted course-scope limits or low-priority debt, documented in project/README.md and section G. Owner for any follow-up: James Nguyen.
+Can the team explain the system: Yes. Each member can explain the architecture, the requirement-linked tests and their own contributions (section N).
+Can a change be recovered: Yes. Known-good tested SHA `78affeaedcafadda2a5c60df8be1801f259e2276` and protected Stage 9 SHA `f7400446d2e69f7a379b1bc507b707845fc965a3`; restore with `git checkout <SHA>` or a reviewed revert commit, never by rewriting history.
+Common decision / PG decision where different: Common UG decision only; PG not applicable.
 
 
 ## K Final tested release SHA
