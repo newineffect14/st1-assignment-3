@@ -49,7 +49,7 @@ cd ..
 
 - `python main.py` runs a short synthetic demonstration.
 - `python main.py --interactive` starts the menu.
-- `python -m pytest -q` runs the full suite. Release result: *54 passed**.
+- `python -m pytest -q` runs the full suite. Release result: **54 passed**.
 
 ## Interactive menu
 
