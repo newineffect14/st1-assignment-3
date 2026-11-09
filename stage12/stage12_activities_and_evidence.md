@@ -153,6 +153,7 @@ Release blockers still open / status: None.
 
 Issue / PR / diff links and reviewed SHA: Release branch `release/stage12`; release PR [#14](https://github.com/newineffect14/st1-assignment-3/pull/14), reviewed at `f10ded6` (code identical to release candidate `78affeaedcafadda2a5c60df8be1801f259e2276`).
 Independent reviewer / feedback / response: Joshua Sisourath approved PR #14 after checking no code changed since `78affea`, the README covers Lem's 3 findings, the record matches the evidence, there's no junk, and 31 passed on his Mac. His one non-blocking note (section K wording understated the later non-code changes) was fixed in the next commit.
+Integration commit / full recheck: PR #14 merged into `main` as `0192d131a3b1bfca75af28b11cd5ede9ad13fd94`; full suite rerun on main after merge – 31 passed.
 Tracked and untracked file inspection / cleanliness: `git ls-files` lists only README.md, .gitignore, project/ source and tests, and stage records. `git status --short` was empty. .gitignore excludes .venv, caches, .env and Stage 8 tool folders.
 Secrets/staff material/caches/tool-metadata exclusion check: No secrets, .env, real patient data, staff solutions, peer forms, caches, Stage 8 utility or backups are tracked.
 Candidate recovery plan / known-good SHA: Known-good tested SHA `78affeaedcafadda2a5c60df8be1801f259e2276`; protected Stage 9 SHA `f7400446d2e69f7a379b1bc507b707845fc965a3`. Either can be restored with `git checkout <SHA>` or a reviewed revert commit. History is never rewritten.
@@ -173,28 +174,28 @@ Common decision / PG decision where different: Common UG decision only; PG not a
 
 Exact common tested SHA: `78affeaedcafadda2a5c60df8be1801f259e2276` (31 passed; fresh-copy verified by Lemuel, section F).
 Exact PG tested SHA or not applicable: Not applicable – UG-only group.
-Final submitted SHA / repository URL: TO FILL (merge commit on `main`) – https://github.com/newineffect14/st1-assignment-3
+Final submitted SHA / repository URL: The merge commit of this final record PR on `main`, given in the Canvas submission (a record can't contain its own commit SHA). It differs from release merge `0192d131a3b1bfca75af28b11cd5ede9ad13fd94` only in this Stage 12 record update. Repository: https://github.com/newineffect14/st1-assignment-3
 Evidence-only later commit and difference explanation: Commits after `78affea` change only non-executable files: project/README.md (`b6cc15a`, fresh-copy setup fixes), stage12/evidence/ (`fea44b3`), stage09 record and screenshots (`1d3f880`), and the Stage 12 record. No code, tests or main.py changed (`git diff 78affea -- project/smartcare project/tests project/main.py` is empty, confirmed by Joshua in PR #14).
 Executable changes after testing and re-verification: None after `78affea`. The full suite is rerun on the final submitted SHA anyway.
-Source ZIP name / SHA correspondence / extracted comparison: TO FILL – `SmartCare-release.zip` from `git archive` of the final submitted SHA, extracted and checked.
+Source ZIP name / SHA correspondence / extracted comparison: `SmartCare-release.zip`, made with `git archive --format=zip HEAD` from the final submitted SHA. A trial ZIP of `0192d13` was extracted into a separate folder: the root has .gitignore, README.md, project/ and stage06–stage12 (PG templates unchanged); no .git, .venv, __pycache__, ZIPs or Stage 8 files; `python3 -m pytest -q` in the extracted project/ gave 31 passed. The final ZIP is rebuilt and rechecked the same way.
 
 
 ## L Submission package verification
 
-- [ ] Feature freeze and scoped requirements traced.
-- [ ] Applicable full regressions, integrated demo and invalid paths verified.
-- [ ] Architecture/code quality and final AI/dependency checks complete.
-- [ ] Root README and project/README reproduced by another verifier.
-- [ ] Release notes, technical debt and limitations visible.
-- [ ] Independent human review, integration and release decision recorded.
-- [ ] Repository URL accessible to marker and exact candidate SHA identified.
-- [ ] One source ZIP from submitted commit with root README.md and .gitignore.
-- [ ] project/ source and all accumulated applicable tests included.
-- [ ] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
-- [ ] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
-- [ ] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
-- [ ] Mixed-group common protection and candidate upload routing checked.
-- [ ] Group reflection, confidential individual peer forms and common team viva routed separately.
+- [x] Feature freeze and scoped requirements traced.
+- [x] Applicable full regressions, integrated demo and invalid paths verified.
+- [x] Architecture/code quality and final AI/dependency checks complete.
+- [x] Root README and project/README reproduced by another verifier.
+- [x] Release notes, technical debt and limitations visible.
+- [x] Independent human review, integration and release decision recorded.
+- [x] Repository URL accessible to marker and exact candidate SHA identified.
+- [x] One source ZIP from submitted commit with root README.md and .gitignore.
+- [x] project/ source and all accumulated applicable tests included.
+- [x] All common applicable stage records included; Stage 10/11 records completed only for the PG pathway. UG-only groups retain supplied PG-only templates unchanged as intentionally not applicable, without fabricated N/A responses.
+- [x] No .git, environments, caches, secrets, real data, staff solutions or private QA in ZIP.
+- [x] No Stage 8 utility/backups/recovery metadata or duplicate application in ZIP.
+- [x] Mixed-group common protection and candidate upload routing checked.
+- [x] Group reflection, confidential individual peer forms and common team viva routed separately.
 
 Confirmed assessment item/upload route: Canvas "Assignment 3 Overview" (website URL submission), repository URL, full submitted SHA, tested SHA and source ZIP as confirmed with our tutor.
 Deadline/timezone: Extended to Monday 9 November 2026 midnight
