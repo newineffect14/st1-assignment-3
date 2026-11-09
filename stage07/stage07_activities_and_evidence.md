@@ -1,6 +1,6 @@
 # Stage 7 Testing and Verification Record
 
-Group/tutorial: [complete]  Members/cohorts: [complete]
+Group/tutorial: Group 5, Thursday 2:30  Members/cohorts: James Nguyen, Lemuel Legaspi, Joshua Sisourath – all UG
 Requirements baseline: SmartCare A3 Requirements Baseline 2026, revision 2.
 Use the same project/. Link actual evidence; keep responses concise. Blank fields are for your group. Copy rows only as needed.
 
@@ -87,6 +87,14 @@ Assign TEST IDs before implementation or generation. Use canonical AC IDs with t
 | FR-06 Cancel appointment | Cancelling an appointment changes its status to CANCELLED and retains the record | TEST-09 | Positive | test_domain_cancellation_and_guard() - tests/test_starter.py | Appointment status becomes CANCELLED and remains stored | Passed in 12-test run | Supplied |
 | FR-06 Cancel appointment | Repeated cancellation is rejected | TEST-10 | Negative | test_domain_cancellation_and_guard() - tests/test_starter.py | ValueError is raised when cancelling an already cancelled appointment | Passed in 12-test run | Supplied |
 | FR-05 Prevent double booking | Same practitioner cannot be booked twice at the same time | TEST-11 | Negative | test_double_booking_rejected() - tests/test_starter.py | ValueError is raised for a conflicting booking | Passed in 12-test run | Student-authored |
+| FR-02 Find patient | AC-02.1 known patient returns that patient | TEST-S01 | Positive | test_find_patient_returns_the_registered_object() - tests/test_services.py | Same stored object, also with surrounding spaces | 54 passed at a8f3640 | Student-authored |
+| FR-02 Find patient | AC-02.2 unknown patient reports absence | TEST-S02 | Negative / boundary | test_find_patient_unknown_and_case_sensitive_raise_lookup_error() - tests/test_services.py | 'P9' and wrong-case 'p1' raise LookupError; no patient created | 54 passed at a8f3640 | Student-authored |
+| FR-02 ID contract | "IDs are strings, trimmed, non-blank and case-sensitive" | TEST-S03 | Boundary | test_find_patient_blank_id_raises_value_error() - tests/test_services.py | Blank ID raises ValueError (invalid, not absent) | 54 passed at a8f3640 | Student-authored |
+| FR-03 Practitioner lookup | "A valid unknown service lookup raises LookupError" | TEST-S04, TEST-S05 | Positive / negative / boundary | test_find_practitioner_*() - tests/test_services.py | Same object returned; 'D9'/'d1' LookupError; blank ValueError | 54 passed at a8f3640 | Student-authored |
+| FR-06, FR-07 Cancel and retain | AC-05.1, AC-05.2, BR-06 | TEST-S06, TEST-S07 | Negative / positive | test_cancel_completed_appointment_is_rejected_without_change(), test_cancel_returns_same_object_and_keeps_history() - tests/test_services.py | COMPLETED rejected and unchanged; cancel returns and keeps the same object | 54 passed at a8f3640 | Student-authored |
+| FR-01, FR-03 Domain validation | AC-01.1 and "Required names and specialty are non-blank" | TEST-D01–D03 | Positive / boundary | tests/test_domain.py | Trimmed fields, read-only ID; blank fields raise ValueError | 54 passed at a8f3640 | Student-authored |
+| FR-04, BR-04 Appointment construction | "Use local naive datetime values at minute precision" | TEST-D04–D06 | Positive / boundary | tests/test_domain.py | Starts SCHEDULED with actual objects; seconds/microseconds/timezone and ID strings rejected | 54 passed at a8f3640 | Student-authored |
+| FR-06 Domain transition | AC-05.1, AC-05.3, BR-06 | TEST-D07, TEST-D08 | Positive / negative | tests/test_domain.py | SCHEDULED→CANCELLED; CANCELLED/COMPLETED cancel raises ValueError and status unchanged | 54 passed at a8f3640 | Student-authored |
 
 ## C Test Design
 
@@ -122,6 +130,7 @@ Cover Patient/Practitioner construction and validation; Appointment construction
 | TEST-08 | Patient registration and appointment booking work | tests/test_starter.py - test_registration_and_booking() | Passed in 12-test run |
 | TEST-09 | Appointment cancellation changes status to CANCELLED and retains the appointment in storage | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in 12-test run |
 | TEST-10 | Cancelling an already cancelled appointment raises ValueError | tests/test_starter.py - test_domain_cancellation_and_guard() | Passed in 12-test run |
+| TEST-D01–D08 | Patient/Practitioner construction and validation; Appointment initial status, datetime contract, participant objects, cancel transition and illegal transitions | tests/test_domain.py (new, student-authored) | 23 new tests passed; full suite 54 passed at a8f3640 |
 
 ## F Service Test Evidence
 
@@ -134,6 +143,7 @@ Use fresh shared SmartCareDataStore state, registered objects and completed Stag
 | TEST-04 | Reject an unknown appointment ID | FR-06 Appointment Cancellation | tests/test_starter.py - test_cancel_unknown_appointment() | Passed in 12-test run |
 | TEST-05 | Keep cancelled appointments stored and retrievable | FR-07 Retained History | tests/test_starter.py - test_cancel_appointment() | Passed in 12-test run |
 | TEST-11 | Reject double booking for the same practitioner and time | FR-05 Prevent Double Booking | tests/test_starter.py - test_double_booking_rejected() | Passed in 12-test run |
+| TEST-S01–S07 | Patient and practitioner lookup (same object, trimmed, case-sensitive, unknown vs blank), guarded cancellation and retained history | FR-02, FR-03, FR-06, FR-07 / AC-02.1, AC-02.2, AC-05.1–05.3 | tests/test_services.py (new, student-authored) | Passed; full suite 54 passed at a8f3640 |
 
 ## G Negative and Boundary Cases
 
@@ -192,6 +202,7 @@ Run python -m pytest from project/. Retain all accumulated tests. Record the tes
 | Command | Working directory | Code SHA | Passed | Failed | Failure summary | Product defect / test defect / unresolved | Evidence and interpretation |
 |---|---|---|---|---|---|---|---|
 | python3 -m pytest -q | project/ | cbdfa07 | 12 | 0 | None | No defects found in this run | All 12 tests passed in 0.01s |
+| python3 -m pytest -q | project/ | a8f3640f5c77f76295f96cac172e5fc11002efac | 54 | 0 | None | No defects found; new tests only | Added test_domain.py and test_services.py so supplied checks (test_starter.py) and student-authored evidence are separate. No production code changed. |
 
 Individual test runs and changed-order independence evidence: Not separately performed. Full pytest suite completed with 12 passed and 0 failed.
 
