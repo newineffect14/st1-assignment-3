@@ -30,11 +30,10 @@ class PatientService:
         return patient
 
     def find_patient(self, patient_id: str) -> Patient:
-        """Stage 6 TODO: return the stored patient for a valid patient ID.
+        """Return the stored patient for a valid patient ID.
 
-        Completion must raise LookupError for absence and ValueError for
-        a blank/invalid ID. It must not create a replacement patient.
-        The starter deliberately raises NotImplementedError.
+        Raise LookupError for absence and ValueError for a blank/invalid
+        ID. Never create a replacement patient.
         """
         patient = self.data_store.find_patient(patient_id)
 
