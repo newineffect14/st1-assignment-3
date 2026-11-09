@@ -49,7 +49,7 @@ cd ..
 
 - `python main.py` runs a short synthetic demonstration.
 - `python main.py --interactive` starts the menu.
-- `python -m pytest -q` runs the full suite. Release result: **31 passed**.
+- `python -m pytest -q` runs the full suite. Release result: *54 passed**.
 
 ## Interactive menu
 
@@ -83,6 +83,8 @@ project/
 │   └── console.py          menu, input parsing and output
 └── tests/
     ├── test_starter.py     supplied and Stage 6–7 tests
+    ├── test_domain.py      Stage 7 domain tests
+    ├── test_services.py    Stage 6–7 service tests
     ├── test_regressions.py Stage 8 fault regressions
     ├── test_queries.py     Stage 9 pure query tests
     └── test_workflows.py   Stage 9 service and console tests

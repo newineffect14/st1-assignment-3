@@ -10,7 +10,7 @@ Baseline: Stage 6 foundation, 2026 revision 2. This starter deliberately leaves 
 - Shared repository URL: https://github.com/newineffect14/st1-assignment-3
 - Latest completed stage: Stage 12 (UG final release)
 - Verified code SHA: see [Stage 12 record section K](stage12/stage12_activities_and_evidence.md)
-- Test command, working directory and observed result: `python -m pytest -q` in `project/` – 31 passed
+- Test command, working directory and observed result: `python -m pytest -q` in `project/` –54 passed
 - Final submitted SHA, if different from tested code SHA: see [Stage 12 record section K](stage12/stage12_activities_and_evidence.md) (later commits are evidence-only)
 
 ## Complete package and stage sequence
