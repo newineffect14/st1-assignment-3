@@ -197,12 +197,12 @@ Source ZIP name / SHA correspondence / extracted comparison: TO FILL – `SmartC
 - [ ] Mixed-group common protection and candidate upload routing checked.
 - [ ] Group reflection, confidential individual peer forms and common team viva routed separately.
 
-Confirmed assessment item/upload route: [response]
-Deadline/timezone: [response]
-Repository access arrangement: [response]
-Mixed-candidate upload arrangement: [response]
-Oral/video recording/accessibility arrangements: [response]
-Remaining administration or release dependency: [response]
+Confirmed assessment item/upload route: Canvas "Assignment 3 Overview" (website URL submission), repository URL, full submitted SHA, tested SHA and source ZIP as confirmed with our tutor.
+Deadline/timezone: Extended to Monday 9 November 2026 midnight
+Repository access arrangement: Public repository https://github.com/newineffect14/st1-assignment-3
+Mixed-candidate upload arrangement: Not applicable, UG-only group, one common candidate.
+Oral/video recording/accessibility arrangements: Team viva as arranged by our tutor; no special arrangements requested.
+Remaining administration or release dependency: Section M (Joshua), team sign-off of J and N, release PR approval and merge, then ZIP from the merge commit and Canvas submission.
 
 
 ## M Formative questions
