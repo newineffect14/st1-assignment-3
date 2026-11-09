@@ -207,25 +207,25 @@ Remaining administration or release dependency: Section M (Joshua), team sign-of
 
 ## M Formative questions
 
-1. What is a release candidate? [response]
+1. What is a release candidate? A release candidate is the exact commit we propose to release once testing is done. Ours is `78affeaedcafadda2a5c60df8be1801f259e2276`, which James tested on Mac and Lem tested from a fresh Windows clone.
 
-2. What is feature freeze and why is it used? [response]
+2. What is feature freeze and why is it used? Feature freeze means we stop adding new features so the release can be tested and stabilised without things changing underneath us. We froze features at `c77585a`; after that only one docstring fix (`78affea`) and documentation changed.
 
-3. What is regression testing in a release context? [response]
+3. What is regression testing in a release context? Regression testing means re-running all the earlier tests to check that recent changes haven't broken anything that already worked. We kept all 31 tests from Stages 6–9, and they passed on both James's Mac and Lem's fresh Windows copy.
 
-4. What is a known limitation? [response]
+4. What is a known limitation? A known limitation is something the release deliberately doesn't do, written down so users aren't surprised. For example, SmartCare only keeps data for the current session and doesn't support rescheduling appointments.
 
-5. What is technical debt? [response]
+5. What is technical debt? Technical debt is a shortcut or design weakness we accept now that will cost extra effort to fix later. For example, `run_menu` is one long function that would be harder to maintain or extend (see section G).
 
-6. What are release notes? [response]
+6. What are release notes? Release notes are a short summary of what the release delivers, what was fixed and improved, plus its known limitations and how AI was used. Ours are in section G.
 
-7. What is software maintenance? [response]
+7. What is software maintenance? Software maintenance is any change made after release, such as bug fixes, updates or improvements. These should go through reviewed commits so the submitted version can always be recovered.
 
-8. What is the purpose of the individual demonstration/viva? [response]
+8. What is the purpose of the individual demonstration/viva? The viva checks that each member actually understands the system and can explain how it works and what they contributed, not just that the code exists.
 
-9. What should the final responsible-AI check establish before release? [response]
+9. What should the final responsible-AI check establish before release? It should confirm that a human checked every AI suggestion, decisions are recorded, there are no secrets or real personal data, there are no unexplained changes or unnecessary dependencies, and AI use is disclosed honestly (section E).
 
-10. What is the main course conclusion about AI and the role of the software engineer? [response]
+10. What is the main course conclusion about AI and the role of the software engineer? AI can generate code, but engineers are still needed to understand the requirements, design the system, verify it with tests, review changes, make decisions and take responsibility for the result.
 
 
 ## N Reflection viva and handover
