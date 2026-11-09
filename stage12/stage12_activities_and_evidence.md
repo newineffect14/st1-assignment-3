@@ -252,13 +252,13 @@ One paragraph — If AI can write code why do we still need software engineers: 
 | FR-07 retained history test | [response] |
 | Actual AI change rejected/modified or honestly accepted with verification | [response] |
 | Unresolved limitation / future production work | [response] |
-| Personal implementation contribution | [response] |
-| Personal test/review/design/integration contribution | [response] |
+| Personal implementation contribution | **James:** Stage 9 pure queries (`queries.py`), practitioner listing in `services.py` and the interactive console menu (`console.py`, `main.py`). **Lemuel:** Stage 8 fix for F8-02 – removed the status filter in `find_appointment` so cancelled appointments stay findable as history. **Joshua:** Stage 6 `cancel_appointment` and practitioner service methods (`92c2af6`, `cbbc142`) and the Stage 8 F8-01 conflict-check fix (`d10f930`). |
+| Personal test/review/design/integration contribution | **James:** 15 Stage 9 tests (`test_queries.py`, `test_workflows.py`), Stage 9 Copilot review decisions, and the Stage 12 release branch, README and record. **Lemuel:** Stage 8 regression tests (including TEST-R04 after review) and merged PR #9; reviewed and merged Stage 9 PR #11 and wrote sections G and H; Stage 12 fresh-clone test and full console demo on Windows. **Joshua:** Stage 6–7 tests, kept unchanged in the 31-test suite; Stage 9 README, sections D and F and the UI-01/UI-02 manual screenshots; Stage 12 section M and release PR #14 review, re-running 31 tests and using `git diff` to confirm no code changed after `78affea`. |
 | PG agentic change and rescheduling verification | [response] |
 | PG responsible-AI risk/remediation or supported no finding | [response] |
 
 Optional bounded-change practice only: validation rule, focused test, safe error-message change, explicit-input query or agreed status rule with test. Explain expected impact before editing, make a small change, run the test, and identify evidence to inspect if unsure. No live AI unless explicitly permitted. Preserve the submitted candidate.
 
-Practice question/change and reasoning: [response or not undertaken]
-Separate reflection / peer / common team viva evidence links and routing: [response]
+Practice question/change and reasoning: not undertaken
+Separate reflection / peer / common team viva evidence links and routing: The group reflection report, each member's confidential self-and-peer form and the common team viva are separate assessment items submitted through their own Canvas routes. They are not stored in this public repository.
 No further coding stage. Later corrections use the published assessment process.
