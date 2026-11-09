@@ -229,33 +229,33 @@ Remaining administration or release dependency: Section M (Joshua), team sign-of
 
 ## N Reflection viva and handover
 
-Strongest evidence SmartCare is ready: [response]
-Weakest area: [response]
-How AI use changed from Stage 1 to Stage 12: [response]
-Start doing — engineering and AI use: [response]
-Stop doing — engineering and AI use: [response]
-Continue doing — engineering and AI use: [response]
-What worked / caused rework / future delivery improvement: [response]
-One paragraph — If AI can write code why do we still need software engineers: [response]
+Strongest evidence SmartCare is ready: The release candidate `78affeaedcafadda2a5c60df8be1801f259e2276` passed all 31 tests on three machines (James's Mac, Lemuel's fresh Windows clone, and Joshua's Mac during the PR review), Lemuel's fresh-copy demo matched all 21 steps, and Joshua's review confirmed with `git diff` that no code or tests changed after `78affea`.
+Weakest area: The console is the least maintainable part, because `run_menu` is one long function (technical debt in section G). The record also needed a wording fix in section K that Joshua caught in the PR review, which shows evidence has to be checked as carefully as the code.
+How AI use changed from Stage 1 to Stage 12: Early on we mostly asked AI for answers. By Stages 8–9 we wrote our own hypotheses and design first, then used Copilot as a reviewer and recorded Accept/Modify/Reject decisions with test evidence (we accepted 1 of 4 Stage 9 findings).
+Start doing — engineering and AI use: Run a fresh-clone check before every release, not only at the end, and save Copilot transcripts from the first stage.
+Stop doing — engineering and AI use: Editing an old local branch without pulling first (PR #13 would have wiped finished work) and pushing straight to main by mistake.
+Continue doing — engineering and AI use: Small focused branches and PRs with a real reviewer, requirement-linked test IDs, and checking every AI suggestion against code and tests before using it.
+What worked / caused rework / future delivery improvement: Worked: clear stage ownership and PR reviews that caught real issues (Stage 7 gaps, Stage 9 README and hedged evidence, Stage 12 section K wording). Rework came from stale branches and late evidence. Next time: agree a "pull first, small PRs" rule and finish evidence alongside the code.
+One paragraph — If AI can write code why do we still need software engineers: AI can produce plausible code quickly, but it doesn't know which requirement matters, whether a suggestion breaks a rule like retained history, or whether a test actually proves anything. In SmartCare, Copilot suggested moving the conflict check into the store, which looked reasonable but would have mixed responsibilities. A human had to compare it with the design and tests and reject it. Engineers decide what to build, verify it with meaningful tests, review changes, and take responsibility for what is released. AI is a useful assistant, not the person accountable.
 
 | Preparation item | Own explanation and evidence link |
 |---|---|
-| Problem and stakeholders | [response] |
-| Two requirements and acceptance criteria | [response] |
-| Domain model and architecture | [response] |
-| Design trade-off | [response] |
-| Meaningful test and its limits / 100 percent coverage | [response] |
-| Diagnosed defect and verification | [response] |
-| Shared store and session-state/query responsibilities | [response] |
-| What would break if session-state lookup/query responsibilities changed? | [response] |
-| Why cancellation is domain behaviour / conflict coordination is service behaviour | [response] |
-| FR-07 retained history test | [response] |
-| Actual AI change rejected/modified or honestly accepted with verification | [response] |
-| Unresolved limitation / future production work | [response] |
+| Problem and stakeholders | Clinic staff need to register patients and practitioners and manage appointments without double-booking a practitioner or losing cancelled history. Stakeholders: reception staff, practitioners, patients, clinic manager. [project/README.md](../project/README.md) |
+| Two requirements and acceptance criteria | FR-05 / AC-04.1–04.2: same practitioner at the exact same time is rejected; a different practitioner is allowed. FR-07 / AC-05.2: cancelled appointments stay retrievable this session. |
+| Domain model and architecture | Patient, Practitioner, Appointment and AppointmentStatus in domain.py; SmartCareDataStore holds session collections; services coordinate; queries.py is pure; console.py handles I/O. |
+| Design trade-off | The conflict rule lives in AppointmentService, not the store. This keeps the store simple, but code adding appointments straight to the store could bypass it (documented limitation). |
+| Meaningful test and its limits / 100 percent coverage | TEST-W05 checks conflict rejection without state change, cancellation keeps the same object, and the freed slot can be rebooked. It can't prove every input. 100% coverage only means lines ran, not that the right things were checked. |
+| Diagnosed defect and verification | Stage 8 F8-02: cancelled appointments disappeared from lookup. A regression test reproduced it, the minimal `find_appointment` fix removed the status filter, and the full suite passed afterwards (stage08 record). |
+| Shared store and session-state/query responsibilities | One SmartCareDataStore is created per session and shared by all services. The pure query only receives an explicit list and never reads the store itself. |
+| What would break if session-state lookup/query responsibilities changed? | If the query read a global store, results would depend on hidden state and the tests would no longer be repeatable. If the console made its own store each loop, data would vanish between menu options. |
+| Why cancellation is domain behaviour / conflict coordination is service behaviour | Cancelling only changes one appointment's own state, so Appointment owns it. Conflicts need to compare many appointments in the store, so the service coordinates it. |
+| FR-07 retained history test | TEST-W05 asserts `find_appointment('A1') is` the same object with status CANCELLED, still listed with all statuses, excluded from SCHEDULED. |
+| Actual AI change rejected/modified or honestly accepted with verification | Stage 9: accepted Copilot's point that UI-02 didn't check the bad-date booking was not stored, so we added a lookup (`bf7b2f6`). Rejected moving the conflict check into the store. [copilot_review.md](../stage09/copilot_review.md) |
+| Unresolved limitation / future production work | Session-only data; production would need persistence, authentication, rescheduling and clinic rules (hours, durations). |
 | Personal implementation contribution | **James:** Stage 9 pure queries (`queries.py`), practitioner listing in `services.py` and the interactive console menu (`console.py`, `main.py`). **Lemuel:** Stage 8 fix for F8-02 – removed the status filter in `find_appointment` so cancelled appointments stay findable as history. **Joshua:** Stage 6 `cancel_appointment` and practitioner service methods (`92c2af6`, `cbbc142`) and the Stage 8 F8-01 conflict-check fix (`d10f930`). |
 | Personal test/review/design/integration contribution | **James:** 15 Stage 9 tests (`test_queries.py`, `test_workflows.py`), Stage 9 Copilot review decisions, and the Stage 12 release branch, README and record. **Lemuel:** Stage 8 regression tests (including TEST-R04 after review) and merged PR #9; reviewed and merged Stage 9 PR #11 and wrote sections G and H; Stage 12 fresh-clone test and full console demo on Windows. **Joshua:** Stage 6–7 tests, kept unchanged in the 31-test suite; Stage 9 README, sections D and F and the UI-01/UI-02 manual screenshots; Stage 12 section M and release PR #14 review, re-running 31 tests and using `git diff` to confirm no code changed after `78affea`. |
-| PG agentic change and rescheduling verification | [response] |
-| PG responsible-AI risk/remediation or supported no finding | [response] |
+| PG agentic change and rescheduling verification | no need UG group |
+| PG responsible-AI risk/remediation or supported no finding | No need UG group |
 
 Optional bounded-change practice only: validation rule, focused test, safe error-message change, explicit-input query or agreed status rule with test. Explain expected impact before editing, make a small change, run the test, and identify evidence to inspect if unsure. No live AI unless explicitly permitted. Preserve the submitted candidate.
 
